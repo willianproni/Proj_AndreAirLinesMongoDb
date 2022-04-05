@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AirportMicroServices.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Services;
 
 namespace AirportMicroServices.Controllers
 {
@@ -33,9 +35,19 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Airport> Create(Airport newAirport)
+        public async Task<ActionResult<Airport>> Create(Airport newAirport)
         {
+            var addressAirport = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newAirport.Address.Cep);
+            newAirport.Address.City = addressAirport.City;
+            newAirport.Address.Street = addressAirport.Street;
+            newAirport.Address.State = addressAirport.State;
+            newAirport.Address.District = addressAirport.District;
+
+            if (_airportService.VerifyCodeIATA(newAirport.CodeIATA) != null)
+                return Conflict("airport already registered\n\ttry again");
+
             _airportService.Create(newAirport);
+
             return CreatedAtRoute("GetAirport", new { id = newAirport.Id.ToString() }, newAirport);
         }
 
