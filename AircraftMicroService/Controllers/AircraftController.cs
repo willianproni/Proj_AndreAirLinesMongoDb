@@ -3,6 +3,7 @@ using AircraftMicroService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using System;
 
 namespace AircraftMicroService.Controllers
 {
@@ -37,8 +38,18 @@ namespace AircraftMicroService.Controllers
         [HttpPost]
         public ActionResult<Aircraft> Create(Aircraft newAircraft)
         {
-            _aircraftService.Create(newAircraft);
+            try
+            {
+                if (_aircraftService.VerifyAircraftExist(newAircraft.Name))
+                    return Conflict("Aicraft already Registered, Try again");
 
+                _aircraftService.Create(newAircraft);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Exception " + e.Message);
+            }
+            
             return CreatedAtRoute("GetAircraft", new { id = newAircraft.Id.ToString() }, newAircraft);
         }
 

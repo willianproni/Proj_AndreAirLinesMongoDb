@@ -22,6 +22,9 @@ namespace AircraftMicroService.Services
         public Aircraft Get(string id) =>
             _aircraft.Find<Aircraft>(aircraft => aircraft.Id == id).FirstOrDefault();
 
+        public bool VerifyAircraftExist(string nameAircraft) =>
+            _aircraft.Find<Aircraft>(aircraft => aircraft.Name == nameAircraft).Any();
+
         public Aircraft Create(Aircraft newAircraft)
         {
             _aircraft.InsertOne(newAircraft);

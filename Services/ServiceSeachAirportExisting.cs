@@ -25,8 +25,21 @@ namespace Services
             }
             catch (Exception)
             {
-
                 throw;
+            }
+        }
+
+        public static async Task<bool> CheckAirportService()
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44327/api/Status");
+                response.EnsureSuccessStatusCode();
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

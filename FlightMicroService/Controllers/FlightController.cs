@@ -38,6 +38,10 @@ namespace FlightMicroService.Controllers
         [HttpPost]
         public async Task<ActionResult<Flight>> Create(Flight newFlight)
         {
+            if (!await ServiceSeachAirportExisting.CheckAirportService())
+                return StatusCode(503, "Serviço de Airport Indisponivel");
+
+            
             var aiportOrigin = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
             var aiportDestiny = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
 
