@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AirportMicroService.Services;
+using AirportMicroService.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace AirportMicroService
@@ -32,6 +35,14 @@ namespace AirportMicroService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AirportMicroService", Version = "v1" });
             });
+
+            services.Configure<AirportDatabase>(
+                  Configuration.GetSection(nameof(AirportDatabase)));
+
+            services.AddSingleton<IAirportDatabase>(sp =>
+                sp.GetRequiredService<IOptions<AirportDatabase>>().Value);
+
+            services.AddSingleton<AirportService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

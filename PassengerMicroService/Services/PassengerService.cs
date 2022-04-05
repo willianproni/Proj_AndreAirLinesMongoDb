@@ -29,14 +29,12 @@ namespace PassengerMicroService.Services
             return newPassenger;
         }
 
-        public void Update(string id, Passenger upPassenger)
-        {
+        public void Update(string id, Passenger upPassenger) =>        
             _passenger.ReplaceOne(passenger => passenger.Id == id, upPassenger);
-        }
+        
 
-        public void Remove(string id)
-        {
+        public void Remove(string id) =>
             _passenger.DeleteOne(passenger => passenger.Id == id);
-        }
+        
     }
 }

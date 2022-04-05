@@ -37,7 +37,7 @@ namespace PassengerMicroService
             });
 
             services.Configure<PassengerDatabase>(
-     Configuration.GetSection(nameof(PassengerDatabase)));
+                Configuration.GetSection(nameof(PassengerDatabase)));
 
             services.AddSingleton<IPassengerDatabase>(sp =>
                 sp.GetRequiredService<IOptions<PassengerDatabase>>().Value);
