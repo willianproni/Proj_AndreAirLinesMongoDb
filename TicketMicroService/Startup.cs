@@ -10,7 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using TicketMicroService.Services;
+using TicketMicroService.Util;
 
 namespace TicketMicroService
 {
@@ -32,6 +35,14 @@ namespace TicketMicroService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TicketMicroService", Version = "v1" });
             });
+
+            services.Configure<TicketDatabase>(
+                Configuration.GetSection(nameof(TicketDatabase)));
+
+            services.AddSingleton<ITicketDatabase>(sp =>
+                sp.GetRequiredService<IOptions<TicketDatabase>>().Value);
+
+            services.AddSingleton<TicketService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
