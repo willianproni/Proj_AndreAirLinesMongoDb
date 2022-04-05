@@ -23,6 +23,9 @@ namespace PassengerMicroService.Services
         public Passenger Get(string id) =>
             _passenger.Find<Passenger>(passenger => passenger.Id == id).FirstOrDefault();
 
+        public Passenger VerifyCpfPassenger(string cpf) =>
+            _passenger.Find<Passenger>(passenger => passenger.Cpf == cpf).FirstOrDefault();
+
         public Passenger Create(Passenger newPassenger)
         {
             _passenger.InsertOne(newPassenger);

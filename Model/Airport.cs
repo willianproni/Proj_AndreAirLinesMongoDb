@@ -12,7 +12,7 @@ namespace Model
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string Id { get; set; }
-        public string Acronym { get; set; }
+        public string CodeIATA { get; set; }
         public string Name { get; set; }
         public Address Address { get; set; }
     }

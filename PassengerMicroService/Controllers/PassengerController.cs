@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using PassengerMicroService.Services;
+using Services;
+using System;
+using System.Threading.Tasks;
 
 namespace PassengerMicroService.Controllers
 {
@@ -33,11 +36,34 @@ namespace PassengerMicroService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Passenger> Create(Passenger passenger)
+        public async Task<ActionResult<Passenger>> Create(Passenger newPassenger)
         {
-            _passengerService.Create(passenger);
+            var address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newPassenger.Address.Cep);
+            newPassenger.Address.City = address.City;
+            newPassenger.Address.Street = address.Street;
+            newPassenger.Address.State = address.State;
+            newPassenger.Address.District = address.District;
+            newPassenger.Address.Complement = address.Complement;
+            try
+            {
+                if (PassengerExists(newPassenger.Cpf))
+                {
+                    return Conflict("Passenger Exist, try again");
+                }
+                else
+                {
+                    _passengerService.Create(newPassenger);
+                }
+                
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Exception " + e.Message);  
+            }
+            
 
-            return CreatedAtRoute("GetPassenger", new { id = passenger.Id.ToString() }, passenger);
+            return CreatedAtRoute("GetPassenger", new { id = newPassenger.Id.ToString() }, newPassenger);
+          
         }
 
         [HttpPut("{id:length(24)}")]
@@ -62,6 +88,19 @@ namespace PassengerMicroService.Controllers
             _passengerService.Remove(passenger.Id);
 
             return NoContent();
+        }
+        private bool PassengerExists(string cpf)
+        {
+            var passenger = _passengerService.VerifyCpfPassenger(cpf);
+
+            if (passenger != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
