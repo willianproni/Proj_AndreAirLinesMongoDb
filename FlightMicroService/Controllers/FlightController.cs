@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using System;
+using Services;
+using System.Threading.Tasks;
 
 namespace FlightMicroService.Controllers
 {
@@ -34,8 +36,20 @@ namespace FlightMicroService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Flight> Create(Flight newFlight)
+        public async Task<ActionResult<Flight>> Create(Flight newFlight)
         {
+            var aiportOrigin = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
+            var aiportDestiny = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
+
+            newFlight.Origin.CodeIATA = aiportOrigin.CodeIATA;
+            newFlight.Origin.Id = aiportOrigin.Id;
+            newFlight.Origin.Name = aiportOrigin.Name;
+            newFlight.Origin.Address = aiportOrigin.Address;
+
+            newFlight.Destiny.CodeIATA = aiportDestiny.CodeIATA;
+            newFlight.Destiny.Id = aiportDestiny.Id;
+            newFlight.Destiny.Name = aiportDestiny.Name;
+            newFlight.Destiny.Address = aiportDestiny.Address;
 
             _flightService.Create(newFlight);
 

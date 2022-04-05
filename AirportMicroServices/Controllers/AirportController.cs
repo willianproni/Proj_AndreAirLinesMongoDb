@@ -34,7 +34,18 @@ namespace AirportMicroServices.Controllers
             return airport;
         }
 
-        [HttpPost]
+        [HttpGet("iata/{iata}", Name = "GetFlighty")]
+        public ActionResult<Airport> GetAirportIata(string iata)
+        {
+            var airport = _airportService.GetIata(iata);
+
+            if (airport == null)
+                return NotFound("Aiport no Exist");
+
+            return airport;
+        }
+
+[HttpPost]
         public async Task<ActionResult<Airport>> Create(Airport newAirport)
         {
             var addressAirport = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newAirport.Address.Cep);
