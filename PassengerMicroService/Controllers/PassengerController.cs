@@ -46,24 +46,30 @@ namespace PassengerMicroService.Controllers
             newPassenger.Address.Complement = address.Complement;
             try
             {
-                if (PassengerExists(newPassenger.Cpf))
+                if (ValidateCpfPasseger.ValidCpfPassenger(newPassenger.Cpf) == true)
                 {
-                    return Conflict("Passenger Exist, try again");
+                    if (PassengerExists(newPassenger.Cpf))
+                    {
+                        return BadRequest("Passenger Exist, try again");
+                    }
+                    else
+                    {
+                        _passengerService.Create(newPassenger);
+                    }
                 }
                 else
                 {
-                    _passengerService.Create(newPassenger);
+                    return Conflict("Cpf invalid, try again");
                 }
-                
             }
             catch (Exception e)
             {
-                return BadRequest("Exception " + e.Message);  
+                return BadRequest("Exception " + e.Message);
             }
-            
+
 
             return CreatedAtRoute("GetPassenger", new { id = newPassenger.Id.ToString() }, newPassenger);
-          
+
         }
 
         [HttpPut("{id:length(24)}")]
