@@ -45,7 +45,7 @@ namespace AirportMicroServices.Controllers
             return airport;
         }
 
-[HttpPost]
+        [HttpPost]
         public async Task<ActionResult<Airport>> Create(Airport newAirport)
         {
             var addressAirport = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newAirport.Address.Cep);
@@ -54,7 +54,7 @@ namespace AirportMicroServices.Controllers
             newAirport.Address.State = addressAirport.State;
             newAirport.Address.District = addressAirport.District;
 
-            if (_airportService.VerifyCodeIATA(newAirport.CodeIATA) != null)
+            if (_airportService.VerifyCodeIata(newAirport.CodeIATA))
                 return Conflict("airport already registered\n\ttry again");
 
             _airportService.Create(newAirport);

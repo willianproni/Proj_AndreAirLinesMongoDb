@@ -47,20 +47,12 @@ namespace PassengerMicroService.Controllers
             try
             {
                 if (ValidateCpfPasseger.ValidCpfPassenger(newPassenger.Cpf) == true)
-                {
-                    if (PassengerExists(newPassenger.Cpf))
-                    {
-                        return BadRequest("Passenger Exist, try again");
-                    }
-                    else
-                    {
-                        _passengerService.Create(newPassenger);
-                    }
-                }
-                else
-                {
                     return Conflict("Cpf invalid, try again");
-                }
+
+                if (_passengerService.VerifyPassengerExist(newPassenger.Cpf))
+                        return BadRequest("Passenger Exist, try again");
+
+                _passengerService.Create(newPassenger);    
             }
             catch (Exception e)
             {
@@ -94,19 +86,6 @@ namespace PassengerMicroService.Controllers
             _passengerService.Remove(passenger.Id);
 
             return NoContent();
-        }
-        private bool PassengerExists(string cpf)
-        {
-            var passenger = _passengerService.VerifyCpfPassenger(cpf);
-
-            if (passenger != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

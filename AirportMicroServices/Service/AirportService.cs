@@ -25,8 +25,8 @@ namespace AirportMicroServices.Service
         public Airport GetIata(string iata) =>
             _airport.Find<Airport>(airport => airport.CodeIATA == iata).FirstOrDefault();
 
-        public Airport VerifyCodeIATA(string codIata) =>
-            _airport.Find<Airport>(airport => airport.CodeIATA == codIata).FirstOrDefault();
+        public bool VerifyCodeIata(string CodIata) =>
+            _airport.Find<Airport>(airport => airport.CodeIATA == CodIata).Any();
 
         public Airport Create(Airport newAirport)
         {
