@@ -35,6 +35,17 @@ namespace AircraftMicroService.Controllers
             return aircraft;
         }
 
+        [HttpGet("name/{name}", Name = "NameAirclaft")]
+        public ActionResult<Aircraft> GetArcraftName(string name)
+        {
+            var arcraft = _aircraftService.GetNameAircraft(name);
+
+            if (arcraft == null)
+                return NotFound();
+
+            return arcraft;
+        }
+
         [HttpPost]
         public ActionResult<Aircraft> Create(Aircraft newAircraft)
         {

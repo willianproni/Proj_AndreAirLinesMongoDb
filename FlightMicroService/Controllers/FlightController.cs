@@ -39,11 +39,14 @@ namespace FlightMicroService.Controllers
         public async Task<ActionResult<Flight>> Create(Flight newFlight)
         {
             if (!await ServiceSeachAirportExisting.CheckAirportService())
-                return StatusCode(503, "Serviço de Airport Indisponivel");
+                return StatusCode(503, "Service Airport unavailable");
 
-            
+            if (!await ServiceSeachAricraftExisting.CheckAircraftService())
+                return StatusCode(503, "Service AirCraft unavailable");
+
             var aiportOrigin = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
             var aiportDestiny = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
+            var aircraft = await ServiceSeachAricraftExisting.SeachAircraftNameInApi(newFlight.Aircraft.Name);
 
             newFlight.Origin.CodeIATA = aiportOrigin.CodeIATA;
             newFlight.Origin.Id = aiportOrigin.Id;
@@ -54,6 +57,8 @@ namespace FlightMicroService.Controllers
             newFlight.Destiny.Id = aiportDestiny.Id;
             newFlight.Destiny.Name = aiportDestiny.Name;
             newFlight.Destiny.Address = aiportDestiny.Address;
+
+            newFlight.Aircraft = aircraft;
 
             _flightService.Create(newFlight);
 

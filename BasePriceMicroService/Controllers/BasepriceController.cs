@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using BasePriceMicroService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Services;
 
 namespace BasePriceMicroService.Controllers
 {
@@ -33,9 +35,26 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<BasePrice> Create(BasePrice newBaseprice)
+        public async Task<ActionResult<BasePrice>> Create(BasePrice newBaseprice)
         {
+            if(!await ServiceSeachAirportExisting.CheckAirportService())
+                return StatusCode(503, "Service Airport unavailable");
+
+            var originAirport = await ServiceSeachAirportExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
+            var destinyAirport = await ServiceSeachAirportExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
+
+            newBaseprice.Origin.CodeIATA = originAirport.CodeIATA;
+            newBaseprice.Origin.Id = originAirport.Id;
+            newBaseprice.Origin.Name = originAirport.Name;
+            newBaseprice.Origin.Address = originAirport.Address;
+
+            newBaseprice.Destiny.CodeIATA = destinyAirport.CodeIATA;
+            newBaseprice.Destiny.Id = destinyAirport.Id;
+            newBaseprice.Destiny.Name = destinyAirport.Name;
+            newBaseprice.Destiny.Address = destinyAirport.Address;
+
             _basepriceService.Create(newBaseprice);
+
             return CreatedAtRoute("GetBasePrice", new { id = newBaseprice.Id.ToString() }, newBaseprice);
         }
 
