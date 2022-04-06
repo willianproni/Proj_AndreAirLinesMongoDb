@@ -6,6 +6,7 @@ using Model;
 using System;
 using Services;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace FlightMicroService.Controllers
 {
@@ -38,15 +39,24 @@ namespace FlightMicroService.Controllers
         [HttpPost]
         public async Task<ActionResult<Flight>> Create(Flight newFlight)
         {
-            if (!await ServiceSeachAirportExisting.CheckAirportService())
-                return StatusCode(503, "Service Airport unavailable");
+            /*            if (!await ServiceSeachAirportExisting.CheckAirportService())
+                            return StatusCode(503, "Service Airport unavailable");
 
-            if (!await ServiceSeachAricraftExisting.CheckAircraftService())
-                return StatusCode(503, "Service AirCraft unavailable");
+                        if (!await ServiceSeachAricraftExisting.CheckAircraftService())
+                            return StatusCode(503, "Service AirCraft unavailable");*/
 
             var aiportOrigin = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
             var aiportDestiny = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
-            var aircraft = await ServiceSeachAricraftExisting.SeachAircraftNameInApi(newFlight.Aircraft.Name);
+            Aircraft aircraft;
+            try
+            {
+                aircraft = await ServiceSeachAricraftExisting.SeachAircraftNameInApi(newFlight.Aircraft.Name);
+
+            }
+            catch (HttpRequestException e)
+            {
+                return StatusCode(503, "Service AirCraft unavailable");
+            }
 
             newFlight.Origin.CodeIATA = aiportOrigin.CodeIATA;
             newFlight.Origin.Id = aiportOrigin.Id;

@@ -35,6 +35,17 @@ namespace PassengerMicroService.Controllers
             return passenger;
         }
 
+        [HttpGet("cpf/{cpf}", Name = "GetPassengerCpf")]
+        public ActionResult<Passenger> GetCpf(string cpf)
+        {
+            var passenger = _passengerService.VerifyCpfPassenger(cpf);
+
+            if (passenger == null)
+                return NotFound("unregistered passenger, try again");
+
+            return passenger;
+        }
+
         [HttpPost]
         public async Task<ActionResult<Passenger>> Create(Passenger newPassenger)
         {
@@ -50,9 +61,9 @@ namespace PassengerMicroService.Controllers
                     return Conflict("Cpf invalid, try again");
 
                 if (_passengerService.VerifyPassengerExist(newPassenger.Cpf))
-                        return BadRequest("Passenger Exist, try again");
+                    return BadRequest("Passenger Exist, try again");
 
-                _passengerService.Create(newPassenger);    
+                _passengerService.Create(newPassenger);
             }
             catch (Exception e)
             {

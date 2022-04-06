@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Services;
 using TicketMicroService.Services;
 
 namespace TicketMicroService.Controllers
@@ -33,8 +35,18 @@ namespace TicketMicroService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Ticket> Create(Ticket newTicket)
+        public async Task<ActionResult<Ticket>> Create(Ticket newTicket)
         {
+            var passenger = await ServiceSeachPassengerExisting.SeachPassengerInApi(newTicket.Passenger.Cpf);
+            var flight = await ServiceSeachFlightExisting.SeachFlightApi(newTicket.Flight.Id);
+            var classe = await ServiceSeachApiExisting.SeachClasseIdInApi(newTicket.Classes.Id);
+            var basePrice = await ServiceSeachApiExisting.SeachBasepriceIdInApi(newTicket.BasePrice.Id);
+
+            newTicket.Passenger = passenger;
+            newTicket.Flight = flight;
+            newTicket.Classes = classe;
+            newTicket.BasePrice = basePrice;
+
             _ticketService.Create(newTicket);
             return CreatedAtRoute("GetTicket", new { id = newTicket.Id.ToString() }, newTicket);
         }
