@@ -50,28 +50,45 @@ namespace PassengerMicroService.Controllers
         public async Task<ActionResult<Passenger>> Create(Passenger newPassenger)
         {
             var address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newPassenger.Address.Cep);
-            newPassenger.Address.City = address.City;
-            newPassenger.Address.Street = address.Street;
-            newPassenger.Address.State = address.State;
-            newPassenger.Address.District = address.District;
-            newPassenger.Address.Complement = address.Complement;
+
             try
             {
-                if (ValidateCpfPasseger.ValidCpfPassenger(newPassenger.Cpf) == true)
+                if (!ValidateCpfPasseger.ValidCpfPassenger(newPassenger.Cpf))
                     return Conflict("Cpf invalid, try again");
 
                 if (_passengerService.VerifyPassengerExist(newPassenger.Cpf))
                     return BadRequest("Passenger Exist, try again");
 
-                _passengerService.Create(newPassenger);
+                if (address.Cep == null)
+                {
+                    return NotFound("Cep entered incorrect, try again");
+                }
+
+                if (address.Street != "")
+                {
+                    newPassenger.Address.City = address.City;
+                    newPassenger.Address.Street = address.Street;
+                    newPassenger.Address.State = address.State;
+                    newPassenger.Address.District = address.District;
+                    newPassenger.Address.Complement = address.Complement;
+                    _passengerService.Create(newPassenger);
+
+                }
+                else
+                    _passengerService.Create(newPassenger);
+
             }
-            catch (Exception e)
+            catch (NullReferenceException)
             {
-                return BadRequest("Exception " + e.Message);
+                _passengerService.Create(newPassenger);
+
             }
 
 
-            return CreatedAtRoute("GetPassenger", new { id = newPassenger.Id.ToString() }, newPassenger);
+            return CreatedAtRoute("GetPassenger", new
+            {
+                id = newPassenger.Id.ToString()
+            }, newPassenger);
 
         }
 

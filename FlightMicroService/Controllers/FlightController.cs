@@ -39,36 +39,32 @@ namespace FlightMicroService.Controllers
         [HttpPost]
         public async Task<ActionResult<Flight>> Create(Flight newFlight)
         {
-            /*            if (!await ServiceSeachAirportExisting.CheckAirportService())
-                            return StatusCode(503, "Service Airport unavailable");
+            Airport aiportOrigin, aiportDestiny;
+            Aircraft aircraftApi;
 
-                        if (!await ServiceSeachAricraftExisting.CheckAircraftService())
-                            return StatusCode(503, "Service AirCraft unavailable");*/
-
-            var aiportOrigin = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
-            var aiportDestiny = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
-            Aircraft aircraft;
             try
             {
-                aircraft = await ServiceSeachAricraftExisting.SeachAircraftNameInApi(newFlight.Aircraft.Name);
-
+                aiportOrigin = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
+                aiportDestiny = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
             }
-            catch (HttpRequestException e)
+            catch (HttpRequestException)
             {
-                return StatusCode(503, "Service AirCraft unavailable");
+                return StatusCode(503, "Service Airport unavailable, start Api Aiport");
             }
 
-            newFlight.Origin.CodeIATA = aiportOrigin.CodeIATA;
-            newFlight.Origin.Id = aiportOrigin.Id;
-            newFlight.Origin.Name = aiportOrigin.Name;
-            newFlight.Origin.Address = aiportOrigin.Address;
+            try
+            {
+                aircraftApi = await ServiceSeachAricraftExisting.SeachAircraftNameInApi(newFlight.Aircraft.Name);
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service AirCraft unavailable, start Api Aircraft");
+            }
 
-            newFlight.Destiny.CodeIATA = aiportDestiny.CodeIATA;
-            newFlight.Destiny.Id = aiportDestiny.Id;
-            newFlight.Destiny.Name = aiportDestiny.Name;
-            newFlight.Destiny.Address = aiportDestiny.Address;
+            newFlight.Origin = aiportOrigin;
+            newFlight.Destiny = aiportDestiny;
 
-            newFlight.Aircraft = aircraft;
+            newFlight.Aircraft = aircraftApi;
 
             _flightService.Create(newFlight);
 

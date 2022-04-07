@@ -43,15 +43,10 @@ namespace BasePriceMicroService.Controllers
             var originAirport = await ServiceSeachAirportExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
             var destinyAirport = await ServiceSeachAirportExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
 
-            newBaseprice.Origin.CodeIATA = originAirport.CodeIATA;
-            newBaseprice.Origin.Id = originAirport.Id;
-            newBaseprice.Origin.Name = originAirport.Name;
-            newBaseprice.Origin.Address = originAirport.Address;
+            newBaseprice.Origin = originAirport;
 
-            newBaseprice.Destiny.CodeIATA = destinyAirport.CodeIATA;
-            newBaseprice.Destiny.Id = destinyAirport.Id;
-            newBaseprice.Destiny.Name = destinyAirport.Name;
-            newBaseprice.Destiny.Address = destinyAirport.Address;
+            newBaseprice.Destiny = destinyAirport;
+
 
             _basepriceService.Create(newBaseprice);
 
