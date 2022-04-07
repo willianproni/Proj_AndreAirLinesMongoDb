@@ -25,7 +25,6 @@ namespace Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
