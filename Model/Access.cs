@@ -10,8 +10,7 @@ namespace Model
     public class Access
     {
         [BsonId]
-        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Description { get; set; }
     }
 }

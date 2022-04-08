@@ -90,7 +90,7 @@ namespace FlightMicroService.Controllers
             var flight = _flightService.Get(id);
 
             if (flight == null)
-                return NotFound();
+                return StatusCode(404, "Airport Not Exist");
 
             _flightService.Remove(flight.Id);
 
