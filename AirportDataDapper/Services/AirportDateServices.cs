@@ -23,8 +23,8 @@ namespace AirportDataDapper.Services
         public AirportData Get(string id) =>
             _airpotyDateReposity.Get(id);
 
-        public void Update(string id) =>
-            _airpotyDateReposity.Update(id);
+        public void Update(AirportData airport) =>
+            _airpotyDateReposity.Update(airport);
 
         public void Remove(string id) =>
             _airpotyDateReposity.Delete(id);

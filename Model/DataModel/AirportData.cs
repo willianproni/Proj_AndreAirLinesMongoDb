@@ -17,7 +17,7 @@ namespace Model.DataModel
         public readonly static string GETALL = "SELECT Id, City, Country, Code, Continent FROM Airport";
         public readonly static string GETID = "SELECT Id, City, Country, Code, Continent FROM Airport WHERE ID = @id";
         public readonly static string DELETE = "DELETE FROM Airport WHERE ID = @id";
-        public readonly static string UPDATE = "UPDATE FROM Airport WHERE ID = @id";
+        public readonly static string UPDATE = "UPDATE Airport SET City = @City, Country = @Country, Code = @Code, Continent = @Continent WHERE ID = @id";
 
         #endregion
 

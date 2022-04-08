@@ -23,7 +23,7 @@ namespace AirportDataDapper.Reposity
             using (var dataBase = new SqlConnection(_conection)) //Using "traduz" um metodo Try/Finish
             {
                 dataBase.Open(); //Iniciar(Abrir) Banco de dados.
-                dataBase.Execute(AirportData.INSERT, airport);//Executar o Dapper e INSERIR, informação.
+                dataBase.Execute(AirportData.INSERT, airport);//Executar o Dapper de INSERIR, daodos inseridos.
                 status = true; //Se o Execute funcionar sem conflitos o status é alterado para true.
             }
             return status; //Retorno do Status
@@ -54,15 +54,17 @@ namespace AirportDataDapper.Reposity
         {
             using (var dataBase = new SqlConnection(_conection))
             {
+                dataBase.Open();
                 dataBase.Execute(AirportData.DELETE, new {id = id}); //Executa a função DELETE da dapper, que tem como finalidade Deletar dados
             }
         }
 
-        public void Update(string id) //Atualiza as informações de uma determina coluna pelo Id iformado
+        public void Update(AirportData airport) //Atualiza as informações de uma determina coluna pelo Id iformado
         {
             using (var dataBase = new SqlConnection(_conection))
             {
-                dataBase.Execute(AirportData.UPDATE, id); //Informa o ID e realiza o Update
+                dataBase.Open();
+                dataBase.Execute(AirportData.UPDATE, airport); //Informa o ID e realiza o Update
             }
         }
     }

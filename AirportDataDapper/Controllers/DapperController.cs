@@ -39,6 +39,19 @@ namespace AirportDataDapper.Controllers
             return newAirport;
         }
 
+        [HttpPut("{id}")]
+        public IActionResult Update(string id, AirportData updateAirport)
+        {
+            var airport = _airportDateServices.Get(id);
+
+            if (airport == null)
+                return NotFound("Airport Not Exist, try again");
+
+            _airportDateServices.Update(updateAirport);
+
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public ActionResult<AirportData> Delete(string id)
         {
