@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Model;
+using Model.DataModel;
 using Newtonsoft.Json;
 
 namespace Services
@@ -12,6 +13,22 @@ namespace Services
     public class ServiceSeachApiExisting
     {
         static readonly HttpClient client = new HttpClient();
+
+        public static async Task<AirportData> SeachAirportDataSqlIdApi(string iata)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44376/api/Dapper/JNB?iata=" + iata);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var airportData = JsonConvert.DeserializeObject<AirportData>(responseBody);
+                return airportData;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public static async Task<Classes> SeachClasseIdInApi(string id)
         {

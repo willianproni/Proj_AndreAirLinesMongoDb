@@ -13,7 +13,7 @@ namespace Model
     {
         [JsonProperty("id")]
         public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
-        [JsonProperty("cep")]
+        [JsonProperty("cep")] 
         public string Cep { get; set; }
         [JsonProperty("localidade")]
         public string City { get; set; } //Herda da api Airport

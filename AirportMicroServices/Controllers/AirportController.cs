@@ -1,89 +1,100 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AirportMicroServices.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Model.DataModel;
 using Services;
 
 namespace AirportMicroServices.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] //Rota que a api vai receber "api/airport
     [ApiController]
     public class AirportController : ControllerBase
     {
-        private readonly AirportService _airportService;
+        private readonly AirportService _airportService; //Cria um atribulo do tipo 'AirportService'
 
-        public AirportController(AirportService airportService)
+        public AirportController(AirportService airportService) //Contrutor 'AirportController'
         {
-            _airportService = airportService;
+            _airportService = airportService; //Recebimento de dados
         }
 
-        [HttpGet]
-        public ActionResult<List<Airport>> Get() =>
-            _airportService.Get();
+        [HttpGet] //Responsável por trazer todos os Aeroportos Cadastrado
+        public ActionResult<List<Airport>> Get() => //Função de buscar todos os Aeroportos
+            _airportService.Get();                  // ###
 
-        [HttpGet("{id:length(24)}", Name = "GetAirport")]
-        public ActionResult<Airport> Get(string id)
+        [HttpGet("{iata}")]
+        public ActionResult<Airport> GetSeachAirportIata(string iata) //Responsável por trazer uma dado especifico pelo CodeIata
         {
-            var airport = _airportService.Get(id);
+            var SeachAirport = _airportService.GetAirport(iata); //Verifica se o Aeroporto busca existe
 
-            if (airport == null)
-                return NotFound();
+            if (SeachAirport == null)                                                                      //Se o aeroporto não for encontrado -->
+                return BadRequest("Airport does not exist in the database, check the data and try again"); //<-- Retorna a mensagem
 
-            return airport;
+            return SeachAirport;
         }
 
-        [HttpGet("iata/{iata}", Name = "GetFlighty")]
-        public ActionResult<Airport> GetAirportIata(string iata)
+        [HttpPost] //Responsável por criar um novo Dado Aeroporto na Api
+        public async Task<ActionResult<Airport>> Create(Airport newAirport) 
         {
-            var airport = _airportService.GetIata(iata);
+            Address addressAirport;
+            AirportData InfoAirportData;
+            try
+            {
+                if (_airportService.VerifyCodeIata(newAirport.CodeIATA)) //Verifica se o Aeroporto já existe no database;
+                    return Conflict("Airport already registered in the database");
 
-            if (airport == null)
-                return NotFound("Aiport no Exist");
+                addressAirport = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newAirport.Address.Cep); //Serviço de verificação pelo Cep informado --> Verificado no ViaCep
 
-            return airport;
+                InfoAirportData = await ServiceSeachApiExisting.SeachAirportDataSqlIdApi(newAirport.CodeIATA);//Serviço de verificação pelo CodeIata iformado
+                                                                                                              //--> Verificano na Api do MicroServiço do 'AirportDataDaper'                                                    
+                //Serviço de Busca Usando o ViaCep
+                newAirport.Address.Cep = addressAirport.Cep; //O cep do novo Aeroporto vai receber o cep vindo do ViaCep
+                newAirport.Address.State = addressAirport.State; //O State do novo Aeroporto vai receber o cep vindo do ViaCep
+                newAirport.Address.Street = addressAirport.Street; //A Street do novo Aeroporto vai receber o cep vindo do ViaCep
+                newAirport.Address.Complement = addressAirport.Complement; //O Complement do novo Aeroporto vai receber o cep vindo do ViaCep
+
+                //Seriviço de Busca Usando o MicroServiço AirportDataDapper que está conectado ao banco com os Dados de Vários Aeroportos
+                newAirport.Address.Continent = InfoAirportData.Continent; //O Continent vai receber a informação vindo do MicroSerivço 'AirportDataDapper'
+                newAirport.Address.Country = InfoAirportData.Country; //O Country vai receber a informação vindo do MicroSerivço 'AirportDataDapper'
+                newAirport.Address.City = InfoAirportData.City; //A City vai receber a informação vindo do MicroSerivço 'AirportDataDapper'
+
+                _airportService.Create(newAirport); //Cria um novo Aeroporto no database
+
+                return CreatedAtRoute("GetAirport", new { id = newAirport.Id.ToString() }, newAirport); //Retorna a os dados do novo aeroporto inserido no do Post da api.
+
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service AirportDapper unavailable, start Api AiportDapper and try again"); //Se a api 'AirportDataDapper' não estiver iniciada, o programa vai apresentar esse erro
+            }
+
         }
 
-        [HttpPost]
-        public async Task<ActionResult<Airport>> Create(Airport newAirport)
+        [HttpPut("{iata}")] //Responsável por deletar um dado da Api referente ao CodeIata inserido
+        public IActionResult Update(string iata, Airport upAirport)
         {
-            var addressAirport = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newAirport.Address.Cep);
-            newAirport.Address.City = addressAirport.City;
-            newAirport.Address.Street = addressAirport.Street;
-            newAirport.Address.State = addressAirport.State;
-            newAirport.Address.District = addressAirport.District;
+            var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
 
-            if (_airportService.VerifyCodeIata(newAirport.CodeIATA))
-                return Conflict("airport already registered\n\ttry again");
+            if (SeachAirport == null)                                                                       //Se o aeroporto não for encontrado -->
+                return BadRequest("Airport does not exist in the database, check the data and try again"); //<-- Retorna a mensagem
 
-            _airportService.Create(newAirport);
-
-            return CreatedAtRoute("GetAirport", new { id = newAirport.Id.ToString() }, newAirport);
-        }
-
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Airport upAirport)
-        {
-            var airport = _airportService.Get(id);
-
-            if (airport == null)
-                return NotFound();
-
-            _airportService.Uptade(id, upAirport);
+            _airportService.Uptade(iata, upAirport); //Realiza o Serviço de Update
 
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
+        [HttpDelete("{iata}")] //Deleta um Airport pelo Código da iata
+        public IActionResult Delete(string iata)
         {
-            var airport = _airportService.Get(id);
+            var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
 
-            if (airport == null)
-                return NotFound();
+            if (SeachAirport == null)                                                                       //Se o aeroporto não for encontrado -->
+                return BadRequest("Airport does not exist in the database, check the data and try again"); //<-- Retorna a mensagem
 
-            _airportService.Remove(airport.Id);
+            _airportService.Remove(SeachAirport.CodeIATA); //Realiza o serviço de exclusão
 
             return NoContent();
         }

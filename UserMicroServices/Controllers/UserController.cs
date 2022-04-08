@@ -24,10 +24,10 @@ namespace UserMicroServices.Controllers
         public ActionResult<List<User>> Get() =>
             _userService.Get();
 
-        [HttpGet("{login}")]
-        public ActionResult<User> Get(string login)
+        [HttpGet("{cpf}")]
+        public ActionResult<User> Get(string cpf)
         {
-            var returnSeachUser = _userService.Get(login);
+            var returnSeachUser = _userService.Get(cpf);
 
             if (returnSeachUser == null)
                 return BadRequest("User not Exist");
@@ -39,7 +39,7 @@ namespace UserMicroServices.Controllers
         public async Task<ActionResult<User>> Create(User newUser)
         {
             Function function;
-            if (!string.IsNullOrEmpty(newUser.Login))
+            if (!string.IsNullOrEmpty(newUser.Cpf))
             {
                 try
                 {
@@ -59,31 +59,31 @@ namespace UserMicroServices.Controllers
 
             }
 
-            return BadRequest("Login cannot be null");
+            return BadRequest("Cpf cannot be null");
         }
 
-        [HttpPut("{login}")]
-        public IActionResult Update(string login, User upUser)
+        [HttpPut("{cpf}")]
+        public IActionResult Update(string cpf, User upUser)
         {
-            var VerifyExistLogin = _userService.Get(login);
+            var VerifyExistCpf = _userService.Get(cpf);
 
-            if (VerifyExistLogin == null)
+            if (VerifyExistCpf == null)
                 return BadRequest("User not Exist");
 
-            _userService.Update(login, upUser);
+            _userService.Update(cpf, upUser);
 
             return NoContent();
         }
 
-        [HttpDelete("{login}")]
-        public IActionResult Delete(string login)
+        [HttpDelete("{cpf}")]
+        public IActionResult Delete(string cpf)
         {
-            var VerifyExistLogin = _userService.Get(login);
+            var VerifyExistCpf = _userService.Get(cpf);
 
-            if (VerifyExistLogin == null)
+            if (VerifyExistCpf == null)
                 return BadRequest("User not Exist, verift information");
 
-            _userService.Remove(login);
+            _userService.Remove(cpf);
 
             return NoContent();
 

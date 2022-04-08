@@ -19,8 +19,8 @@ namespace UserMicroServices.Services
         public List<User> Get() =>
             _user.Find(user => true).ToList();
 
-        public User Get(string id) =>
-            _user.Find<User>(user => user.Login == id).FirstOrDefault();
+        public User Get(string cpf) =>
+            _user.Find<User>(user => user.Cpf == cpf).FirstOrDefault();
 
         public User Create(User newUser)
         {
@@ -28,12 +28,12 @@ namespace UserMicroServices.Services
             return newUser;
         }
 
-        public void Update(string login, User upUser) =>
-            _user.ReplaceOne(user => user.Login == login, upUser);
+        public void Update(string cpf, User upUser) =>
+            _user.ReplaceOne(user => user.Cpf == cpf, upUser);
 
 
-        public void Remove(string login) =>
-            _user.DeleteOne(user => user.Login == login);
+        public void Remove(string cpf) =>
+            _user.DeleteOne(user => user.Cpf == cpf);
 
     }
 }

@@ -22,7 +22,7 @@ namespace AirportMicroServices.Service
         public Airport Get(string id) =>
             _airport.Find<Airport>(aircraft => aircraft.Id == id).FirstOrDefault();
 
-        public Airport GetIata(string iata) =>
+        public Airport GetAirport(string iata) =>
             _airport.Find<Airport>(airport => airport.CodeIATA == iata).FirstOrDefault();
 
         public bool VerifyCodeIata(string CodIata) =>
@@ -34,12 +34,12 @@ namespace AirportMicroServices.Service
             return newAirport;
         }
 
-        public void Uptade(string id, Airport upAirport)
+        public void Uptade(string iata, Airport updateAirport)
         {
-            _airport.ReplaceOne(airport => airport.Id == id, upAirport);
+            _airport.ReplaceOne(airport => airport.CodeIATA == iata, updateAirport);
         }
 
-        public void Remove(string id) =>
-            _airport.DeleteOne(airport => airport.Id == id);
+        public void Remove(string iata) =>
+            _airport.DeleteOne(airport => airport.CodeIATA == iata);
     }
 }

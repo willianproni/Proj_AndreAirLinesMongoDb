@@ -21,15 +21,15 @@ namespace AirportDataDapper.Controllers
         public ActionResult<List<AirportData>> Get() =>
             _airportDateServices.GetAll();
 
-        [HttpGet("{id}")]
-        public ActionResult<AirportData> Get(string id)
+        [HttpGet("{code}")]
+        public ActionResult<AirportData> Get(string iata)
         {
-            var airport = _airportDateServices.Get(id);
+            var SeachAirportDapper = _airportDateServices.Get(iata);
 
-            if (airport == null)
+            if (SeachAirportDapper == null)
                 return NotFound("Airport Not Exist");
 
-            return airport;
+            return SeachAirportDapper;
         }
 
         [HttpPost]
@@ -39,12 +39,12 @@ namespace AirportDataDapper.Controllers
             return newAirport;
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Update(string id, AirportData updateAirport)
+        [HttpPut("{code}")]
+        public IActionResult Update(string iata, AirportData updateAirport)
         {
-            var airport = _airportDateServices.Get(id);
+            var SeachAirportDapper = _airportDateServices.Get(iata);
 
-            if (airport == null)
+            if (SeachAirportDapper == null)
                 return NotFound("Airport Not Exist, try again");
 
             _airportDateServices.Update(updateAirport);
