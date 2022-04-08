@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using FunctionMicroService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Services;
 
 namespace FunctionMicroService.Controllers
 {
@@ -33,14 +36,28 @@ namespace FunctionMicroService.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Function> Create(Function newFunction)
+        public async Task<ActionResult<Function>> Create(Function newFunction)
         {
+            List<Access> access;
+
             if (!string.IsNullOrEmpty(newFunction.Id))
             {
                 var verifyExistFunction = _functionService.Get(newFunction.Id);
 
                 if (verifyExistFunction != null)
                     return BadRequest("Function Id Exist, try New Id");
+
+                try
+                {
+                    access = await ServiceSeachApiExisting.SeachAccessIdInApi(newFunction.Id);
+
+                }
+                catch (HttpRequestException)
+                {
+                    return StatusCode(503, "Service Access unavailable, start Api Access");
+                }
+
+                newFunction.Access = access;
 
                 _functionService.Create(newFunction);
 

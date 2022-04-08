@@ -46,5 +46,22 @@ namespace Services
                 throw;
             }
         }
+
+        public static async Task<List<Access>> SeachAccessIdInApi(string id)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44373/api/Access/" + id);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var accessJson = JsonConvert.DeserializeObject<List<Access>>(responseBody);
+                return accessJson;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
