@@ -34,10 +34,10 @@ namespace AircraftMicroService.Services
             return newAircraft;
         }
 
-        public void Update(string id, Aircraft upAircraft) =>
-            _aircraft.ReplaceOne(aircraft => aircraft.Id == id, upAircraft);
+        public void Update(string nameAircraft, Aircraft upAircraft) =>
+            _aircraft.ReplaceOne(aircraft => aircraft.Name == nameAircraft, upAircraft);
 
-        public void Remove(string id) =>
-            _aircraft.DeleteOne(aircraft => aircraft.Id == id);
+        public void Remove(string nameArcraft) =>
+            _aircraft.DeleteOne(aircraft => aircraft.Name == nameArcraft);
     }
 }

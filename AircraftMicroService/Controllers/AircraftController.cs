@@ -22,28 +22,15 @@ namespace AircraftMicroService.Controllers
         public ActionResult<List<Aircraft>> Get() =>
             _aircraftService.Get();
 
-        [HttpGet("{id:length(24)}", Name = "GetAircraft")]
-        public ActionResult<Aircraft> Get(string id)
+        [HttpGet("{name}")]
+        public ActionResult<Aircraft> GetArcraftName(string nameAircraft)
         {
-            var aircraft = _aircraftService.Get(id);
+            var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
 
-            if (aircraft == null)
-            {
-                return NotFound();
-            }
-
-            return aircraft;
-        }
-
-        [HttpGet("name/{name}", Name = "NameAirclaft")]
-        public ActionResult<Aircraft> GetArcraftName(string name)
-        {
-            var arcraft = _aircraftService.GetNameAircraft(name);
-
-            if (arcraft == null)
+            if (SeachArcraft == null)
                 return NotFound();
 
-            return arcraft;
+            return SeachArcraft;
         }
 
         [HttpPost]
@@ -55,43 +42,52 @@ namespace AircraftMicroService.Controllers
                     return Conflict("Aicraft already Registered, Try again");
 
                 _aircraftService.Create(newAircraft);
+
+                return CreatedAtRoute("GetAircraft", new { id = newAircraft.Id.ToString() }, newAircraft);
             }
             catch (Exception e)
             {
                 return BadRequest("Exception " + e.Message);
             }
-            
-            return CreatedAtRoute("GetAircraft", new { id = newAircraft.Id.ToString() }, newAircraft);
         }
 
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Aircraft upAircraft)
+        [HttpPut("name")]
+        public IActionResult Update(string nameAircraft, Aircraft upAircraft)
         {
-            var aircraft = _aircraftService.Get(id);
+            var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
 
-            if (aircraft == null)
-            {
-                return NotFound();
-            }
-
-            _aircraftService.Update(id, upAircraft);
+            if (SeachArcraft == null)
+                return BadRequest("Aircraft does not exist in the database, check the data and try again");
+            
+            _aircraftService.Update(nameAircraft, upAircraft);
 
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
+        [HttpDelete("name")]
+        public IActionResult Delete(string nameAircraft)
         {
-            var aircraft = _aircraftService.Get(id);
+            var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
 
-            if (aircraft == null)
-            {
-                return NotFound();
-            }
+            if (SeachArcraft == null)
+                return BadRequest("Aircraft does not exist in the database, check the data and try again");
 
-            _aircraftService.Remove(aircraft.Id);
+            _aircraftService.Remove(SeachArcraft.Id);
 
             return NoContent();
         }
     }
 }
+
+/*        [HttpGet("{id:length(24)}", Name = "GetAircraft")]
+        public ActionResult<Aircraft> Get(string id)
+        {
+            var aircraft = _aircraftService.Get(id);
+
+            if (aircraft == null)
+            {
+                return NotFound();
+            }
+
+            return aircraft;
+        }*/
