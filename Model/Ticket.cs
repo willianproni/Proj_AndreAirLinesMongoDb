@@ -19,5 +19,6 @@ namespace Model
         public DateTime DateRegister { get; set; }
         public decimal Amount { get; set; }
         public double Promotion { get; set; }
+        public string LoginUser { get; set; }
     }
 }

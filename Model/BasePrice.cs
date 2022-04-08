@@ -16,6 +16,6 @@ namespace Model
         public Airport Destiny { get; set; }
         public decimal Value { get; set; }
         public DateTime InclusionDate { get; set; }
-
+        public string LoginUser { get; set; }
     }
 }

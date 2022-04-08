@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MongoDB.Bson.Serialization.Attributes;
 
 namespace Model
 {
-    public class Airport
+    public abstract class Person
     {
-        public string Id { get; set; }
-        public string CodeIATA { get; set; }
+        public string Cpf { get; set; }
         public string Name { get; set; }
+        public string Telephone { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string Email { get; set; }
         public Address Address { get; set; }
         public string LoginUser { get; set; }
-
     }
 }

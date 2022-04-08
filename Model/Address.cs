@@ -16,7 +16,7 @@ namespace Model
         [JsonProperty("cep")]
         public string Cep { get; set; }
         [JsonProperty("localidade")]
-        public string City { get; set; }
+        public string City { get; set; } //Herda da api Airport
         [JsonProperty("uf")]
         public string State { get; set; }
         [JsonProperty("bairro")]
@@ -28,6 +28,8 @@ namespace Model
         [JsonProperty("complemento")]
         public string Complement { get; set; }
         [JsonProperty("country")]
-        public string Country { get; set; }
+        public string Country { get; set; } //Herda da api Airport
+        [JsonProperty("continent")]
+        public string Continent { get; set; }
     }
 }

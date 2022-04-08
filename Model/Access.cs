@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
 
 namespace Model
 {
-    public class Passenger : Person
+    public class Access
     {
-        public string Passaport { get; set; }
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public int Id { get; set; }
+        public string Description { get; set; }
     }
 }
