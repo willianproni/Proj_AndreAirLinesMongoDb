@@ -39,7 +39,7 @@ namespace AccessMicroService.Controllers
             {
                 var access = _accessService.Get(newAccess.Id);
 
-                if (access == null)
+                if (access != null)
                     return Conflict("Access Id Exist");
 
                 _accessService.Create(newAccess);
