@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessMicroService", "Acces
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionMicroService", "FunctionMicroService\FunctionMicroService.csproj", "{6BBFB885-7EB4-4B33-BF83-0AA15910DA1C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserMicroServices", "UserMicroServices\UserMicroServices.csproj", "{C040D3FD-1CCD-48CA-BF23-C8061494B630}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{6BBFB885-7EB4-4B33-BF83-0AA15910DA1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BBFB885-7EB4-4B33-BF83-0AA15910DA1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BBFB885-7EB4-4B33-BF83-0AA15910DA1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C040D3FD-1CCD-48CA-BF23-C8061494B630}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C040D3FD-1CCD-48CA-BF23-C8061494B630}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C040D3FD-1CCD-48CA-BF23-C8061494B630}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C040D3FD-1CCD-48CA-BF23-C8061494B630}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

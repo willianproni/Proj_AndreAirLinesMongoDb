@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FunctionMicroService.Services;
-using FunctionMicroService.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,8 +12,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using UserMicroService.Util;
+using UserMicroServices.Services;
 
-namespace FunctionMicroService
+namespace UserMicroServices
 {
     public class Startup
     {
@@ -33,16 +33,16 @@ namespace FunctionMicroService
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FunctionMicroService", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "UserMicroServices", Version = "v1" });
             });
 
-            services.Configure<FunctionDatabase>(
-                Configuration.GetSection(nameof(FunctionDatabase)));
+            services.Configure<UserDatabase>(
+                Configuration.GetSection(nameof(UserDatabase)));
 
-            services.AddSingleton<IFunctionDatabase>(sp =>
-                sp.GetRequiredService<IOptions<FunctionDatabase>>().Value);
+            services.AddSingleton<IUserDatabase>(sp =>
+                sp.GetRequiredService<IOptions<UserDatabase>>().Value);
 
-            services.AddSingleton<FunctionService>();
+            services.AddSingleton<UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,7 +52,7 @@ namespace FunctionMicroService
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FunctionMicroService v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserMicroServices v1"));
             }
 
             app.UseHttpsRedirection();

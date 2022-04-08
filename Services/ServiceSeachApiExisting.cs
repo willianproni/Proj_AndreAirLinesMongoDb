@@ -12,7 +12,7 @@ namespace Services
     public class ServiceSeachApiExisting
     {
         static readonly HttpClient client = new HttpClient();
-        
+
         public static async Task<Classes> SeachClasseIdInApi(string id)
         {
             try
@@ -25,7 +25,6 @@ namespace Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -42,7 +41,6 @@ namespace Services
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
@@ -59,7 +57,22 @@ namespace Services
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
 
+        public static async Task<Function> SeachFunctionIdInApi(string id)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44372/api/Function/" + id);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var functionJson = JsonConvert.DeserializeObject<Function>(responseBody);
+                return functionJson;
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }

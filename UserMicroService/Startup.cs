@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FunctionMicroService.Services;
-using FunctionMicroService.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,10 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
-namespace FunctionMicroService
+namespace UserMicroService
 {
     public class Startup
     {
@@ -33,16 +30,8 @@ namespace FunctionMicroService
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FunctionMicroService", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "UserMicroService", Version = "v1" });
             });
-
-            services.Configure<FunctionDatabase>(
-                Configuration.GetSection(nameof(FunctionDatabase)));
-
-            services.AddSingleton<IFunctionDatabase>(sp =>
-                sp.GetRequiredService<IOptions<FunctionDatabase>>().Value);
-
-            services.AddSingleton<FunctionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,7 +41,7 @@ namespace FunctionMicroService
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FunctionMicroService v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserMicroService v1"));
             }
 
             app.UseHttpsRedirection();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Model
 {
-    public class User
+    public class User : Person
     {
         public string Password { get; set; }
         public string Login { get; set; }
