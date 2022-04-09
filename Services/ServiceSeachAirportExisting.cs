@@ -17,7 +17,7 @@ namespace Services
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync("https://localhost:44327/api/Airport/iata/" + iata);
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44327/api/Airport/" + iata);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
                 var airportJson = JsonConvert.DeserializeObject<Airport>(responseBody);

@@ -40,8 +40,8 @@ namespace BasePriceMicroService.Controllers
             if(!await ServiceSeachAirportExisting.CheckAirportService())
                 return StatusCode(503, "Service Airport unavailable");
 
-            var originAirport = await ServiceSeachAirportExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
-            var destinyAirport = await ServiceSeachAirportExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
+            var originAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
+            var destinyAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
 
             newBaseprice.Origin = originAirport;
 

@@ -6,6 +6,7 @@ using PassengerMicroService.Services;
 using Services;
 using System;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace PassengerMicroService.Controllers
 {
@@ -35,7 +36,7 @@ namespace PassengerMicroService.Controllers
             return passenger;
         }
 
-        [HttpGet("cpf/{cpf}", Name = "GetPassengerCpf")]
+        [HttpGet("{cpf}", Name = "GetPassengerCpf")]
         public ActionResult<Passenger> GetCpf(string cpf)
         {
             var passenger = _passengerService.VerifyCpfPassenger(cpf);
@@ -72,7 +73,6 @@ namespace PassengerMicroService.Controllers
                     newPassenger.Address.District = address.District;
                     newPassenger.Address.Complement = address.Complement;
                     _passengerService.Create(newPassenger);
-
                 }
                 else
                     _passengerService.Create(newPassenger);
@@ -80,38 +80,43 @@ namespace PassengerMicroService.Controllers
             }
             catch (NullReferenceException)
             {
-                _passengerService.Create(newPassenger);
-
+                return BadRequest("Invalid Cep entered, please check and try again");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(443, "Service ViaCep Off");
             }
 
 
-            return CreatedAtRoute("GetPassenger", new
-            {
-                id = newPassenger.Id.ToString()
-            }, newPassenger);
+            return CreatedAtRoute("GetPassenger", new { id = newPassenger.Id.ToString() }, newPassenger);
 
         }
 
-        [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Passenger upAassenger)
+        [HttpPut("{cpf}")]
+        public IActionResult Update(string cpf, Passenger upAassenger)
         {
-            if (upAassenger == null)
-                return NotFound();
 
-            _passengerService.Update(id, upAassenger);
+            var seachPassenger = _passengerService.VerifyCpfPassenger(cpf);
+
+
+            if (seachPassenger == null)
+                return BadRequest("");
+
+            _passengerService.Update(cpf, upAassenger);
 
             return NoContent();
         }
 
-        [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
+        [HttpDelete("{cpf}")]
+        public IActionResult Delete(string cpf)
         {
-            var passenger = _passengerService.Get(id);
+            var seachPassenger = _passengerService.VerifyCpfPassenger(cpf);
 
-            if (passenger == null)
-                return NotFound();
 
-            _passengerService.Remove(passenger.Id);
+            if (seachPassenger == null)
+                return BadRequest();
+
+            _passengerService.Remove(seachPassenger.Cpf);
 
             return NoContent();
         }

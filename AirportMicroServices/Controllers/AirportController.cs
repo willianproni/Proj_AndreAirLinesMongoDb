@@ -25,7 +25,7 @@ namespace AirportMicroServices.Controllers
         public ActionResult<List<Airport>> Get() => //Função de buscar todos os Aeroportos
             _airportService.Get();                  // ###
 
-        [HttpGet("{iata}")]
+        [HttpGet("{iata}", Name = "GetAirport")]
         public ActionResult<Airport> GetSeachAirportIata(string iata) //Responsável por trazer uma dado especifico pelo CodeIata
         {
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o Aeroporto busca existe

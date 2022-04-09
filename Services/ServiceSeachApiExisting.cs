@@ -14,6 +14,38 @@ namespace Services
     {
         static readonly HttpClient client = new HttpClient();
 
+        public static async Task<Aircraft> SeachAircraftNameInApi(string nameAircraft)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44366/api/Aircraft/" + nameAircraft);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var aircraftJson = JsonConvert.DeserializeObject<Aircraft>(responseBody);
+                return aircraftJson;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static async Task<Airport> SeachAiportInApi(string iata)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44327/api/Airport/" + iata);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var airportJson = JsonConvert.DeserializeObject<Airport>(responseBody);
+                return airportJson;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public static async Task<AirportData> SeachAirportDataSqlIdApi(string iata)
         {
             try

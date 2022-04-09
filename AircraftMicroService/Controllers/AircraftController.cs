@@ -22,7 +22,20 @@ namespace AircraftMicroService.Controllers
         public ActionResult<List<Aircraft>> Get() =>
             _aircraftService.Get();
 
-        [HttpGet("{name}")]
+/*        [HttpGet("{id:length(24)}", Name = "GetAircraft")]
+        public ActionResult<Aircraft> Get(string id)
+        {
+            var aircraft = _aircraftService.Get(id);
+
+            if (aircraft == null)
+            {
+                return NotFound();
+            }
+
+            return aircraft;
+        }*/
+
+        [HttpGet("{nameAircraft}")]
         public ActionResult<Aircraft> GetArcraftName(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
@@ -51,20 +64,20 @@ namespace AircraftMicroService.Controllers
             }
         }
 
-        [HttpPut("name")]
+        [HttpPut("{nameAircraft}")]
         public IActionResult Update(string nameAircraft, Aircraft upAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
 
             if (SeachArcraft == null)
                 return BadRequest("Aircraft does not exist in the database, check the data and try again");
-            
+
             _aircraftService.Update(nameAircraft, upAircraft);
 
             return NoContent();
         }
 
-        [HttpDelete("name")]
+        [HttpDelete("{nameAircraft}")]
         public IActionResult Delete(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
@@ -72,22 +85,9 @@ namespace AircraftMicroService.Controllers
             if (SeachArcraft == null)
                 return BadRequest("Aircraft does not exist in the database, check the data and try again");
 
-            _aircraftService.Remove(SeachArcraft.Id);
+            _aircraftService.Remove(SeachArcraft.Name);
 
             return NoContent();
         }
     }
 }
-
-/*        [HttpGet("{id:length(24)}", Name = "GetAircraft")]
-        public ActionResult<Aircraft> Get(string id)
-        {
-            var aircraft = _aircraftService.Get(id);
-
-            if (aircraft == null)
-            {
-                return NotFound();
-            }
-
-            return aircraft;
-        }*/

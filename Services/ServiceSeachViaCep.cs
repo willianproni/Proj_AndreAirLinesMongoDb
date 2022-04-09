@@ -25,7 +25,7 @@ namespace Services
             }
             catch (Exception)
             {
-                return null;
+                var will =  new HttpResponseMessage();
             }
         }
     }

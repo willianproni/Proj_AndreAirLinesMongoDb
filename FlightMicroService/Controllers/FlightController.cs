@@ -44,31 +44,22 @@ namespace FlightMicroService.Controllers
 
             try
             {
-                aiportOrigin = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
-                aiportDestiny = await ServiceSeachAirportExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
+                aiportOrigin = await ServiceSeachApiExisting.SeachAiportInApi(newFlight.Origin.CodeIATA);
+                aiportDestiny = await ServiceSeachApiExisting.SeachAiportInApi(newFlight.Destiny.CodeIATA);
+                aircraftApi = await ServiceSeachApiExisting.SeachAircraftNameInApi(newFlight.Aircraft.Name);
+
+                newFlight.Origin = aiportOrigin;
+                newFlight.Destiny = aiportDestiny;
+                newFlight.Aircraft = aircraftApi;
+
+                _flightService.Create(newFlight);
+
+                return CreatedAtRoute("GetFlight", new { id = newFlight.Id.ToString() }, newFlight);
             }
             catch (HttpRequestException)
             {
-                return StatusCode(503, "Service Airport unavailable, start Api Aiport");
+                return StatusCode(503, "Service Airport or Arcraft unavailable, start Api");
             }
-
-            try
-            {
-                aircraftApi = await ServiceSeachAricraftExisting.SeachAircraftNameInApi(newFlight.Aircraft.Name);
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service AirCraft unavailable, start Api Aircraft");
-            }
-
-            newFlight.Origin = aiportOrigin;
-            newFlight.Destiny = aiportDestiny;
-
-            newFlight.Aircraft = aircraftApi;
-
-            _flightService.Create(newFlight);
-
-            return CreatedAtRoute("GetFlight", new { id = newFlight.Id.ToString() }, newFlight);
         }
 
         [HttpPut("{id:length(24)}")]
