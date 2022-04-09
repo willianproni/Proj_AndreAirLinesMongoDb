@@ -21,7 +21,7 @@ namespace AccessMicroService.Controllers
         public ActionResult<List<Access>> Get() =>
             _accessService.Get();
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="GetAccess")]
         public ActionResult<Access> Get(string id)
         {
             var access = _accessService.Get(id);

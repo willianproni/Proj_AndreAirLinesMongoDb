@@ -13,18 +13,19 @@ namespace Services
     {
         static readonly HttpClient client = new HttpClient();
 
-        public static async Task<Address> ServiceSeachCepInApiViaCep(string cep)
+        public static async Task<AddressDTO> ServiceSeachCepInApiViaCep(string cep)
         {
             try
             {
                 HttpResponseMessage response = await client.GetAsync("https://viacep.com.br/ws/" + cep + "/json/");
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                var addressJson = JsonConvert.DeserializeObject<Address>(responseBody);
+                var addressJson = JsonConvert.DeserializeObject<AddressDTO>(responseBody);
                 return addressJson;
             }
-            catch (Exception)
+            catch (HttpRequestException)
             {
+                new HttpRequestException("Serviço do Viacep Idisponivel");
                 return null;
             }
         }

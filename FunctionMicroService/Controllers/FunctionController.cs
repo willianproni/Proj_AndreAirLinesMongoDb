@@ -24,7 +24,7 @@ namespace FunctionMicroService.Controllers
         public ActionResult<List<Function>> Get() =>
             _functionService.Get();
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetFuction")]
         public ActionResult<Function> Get(string id)
         {
             var returnSeachFunction = _functionService.Get(id);
@@ -38,7 +38,7 @@ namespace FunctionMicroService.Controllers
         [HttpPost]
         public async Task<ActionResult<Function>> Create(Function newFunction)
         {
-            List<Access> access;
+            Access access;
 
             if (!string.IsNullOrEmpty(newFunction.Id))
             {
@@ -49,7 +49,7 @@ namespace FunctionMicroService.Controllers
 
                 try
                 {
-                    access = await ServiceSeachApiExisting.SeachAccessIdInApi(newFunction.Id);
+                    access = await ServiceSeachApiExisting.SeachAccessIdInApi(newFunction.Access.Id);
 
                 }
                 catch (HttpRequestException)

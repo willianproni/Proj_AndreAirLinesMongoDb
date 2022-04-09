@@ -16,6 +16,6 @@ namespace Model
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("access")]
-        public List<Access> Access { get; set; }
+        public Access Access { get; set; }
     }
 }

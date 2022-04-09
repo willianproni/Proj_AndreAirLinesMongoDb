@@ -39,7 +39,7 @@ namespace AirportMicroServices.Controllers
         [HttpPost] //Responsável por criar um novo Dado Aeroporto na Api
         public async Task<ActionResult<Airport>> Create(Airport newAirport) 
         {
-            Address addressAirport;
+            AddressDTO addressAirport;
             AirportData InfoAirportData;
             try
             {

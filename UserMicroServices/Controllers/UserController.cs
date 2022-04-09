@@ -24,7 +24,7 @@ namespace UserMicroServices.Controllers
         public ActionResult<List<User>> Get() =>
             _userService.Get();
 
-        [HttpGet("{cpf}")]
+        [HttpGet("{cpf}", Name = "GetUser")]
         public ActionResult<User> Get(string cpf)
         {
             var returnSeachUser = _userService.Get(cpf);
@@ -39,24 +39,28 @@ namespace UserMicroServices.Controllers
         public async Task<ActionResult<User>> Create(User newUser)
         {
             Function function;
+            AddressDTO address;
             if (!string.IsNullOrEmpty(newUser.Cpf))
             {
                 try
                 {
                     function = await ServiceSeachApiExisting.SeachFunctionIdInApi(newUser.Funcition.Id);
+                    address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newUser.Address.Cep);
 
                     newUser.Funcition = function;
+                    newUser.Address.Cep = address.Cep;
+                    newUser.Address.City = address.City;
+                    newUser.Address.Street = address.State;
+                    newUser.Address.District = address.District;
+                    newUser.Address.Complement = address.Complement;
                     _userService.Create(newUser);
 
-                    return CreatedAtRoute("GetUser", new { id = newUser.Id }, newUser);
+                    return CreatedAtRoute("GetUser", new { cpf = newUser.Cpf }, newUser);
                 }
                 catch (HttpRequestException)
                 {
                     return StatusCode(503, "Service Function unavailable, start Api Function");
-
                 }
-
-
             }
 
             return BadRequest("Cpf cannot be null");

@@ -80,7 +80,7 @@ namespace PassengerMicroService.Controllers
             }
             catch (NullReferenceException)
             {
-                return BadRequest("Invalid Cep entered, please check and try again");
+                _passengerService.Create(newPassenger);
             }
             catch (HttpRequestException)
             {
