@@ -57,7 +57,6 @@ namespace TicketMicroService.Controllers
             }
             catch (HttpRequestException)
             {
-
                 return StatusCode(503, "Service Flight unavaileble, start Api Flight");
             }
 
@@ -66,7 +65,7 @@ namespace TicketMicroService.Controllers
                 classe = await ServiceSeachApiExisting.SeachClasseIdInApi(newTicket.Classes.Id);
             }
             catch (HttpRequestException)
-            {
+            { 
 
                 return StatusCode(503, "Service Classe unavailable, start api Classe");
             }
@@ -77,24 +76,15 @@ namespace TicketMicroService.Controllers
             }
             catch (HttpRequestException)
             {
-
                 return StatusCode(503);
             }
-
 
             newTicket.Passenger = passenger;
             newTicket.Flight = flight;
             newTicket.Classes = classe;
-            var amountTotal = basePrice.Value * (classe.Value + (classe.Value / 100));
-
-            if (amountTotal == 0)
-            {
-                newTicket.Amount = basePrice.Value;
-            }
-            else
-            {
-                newTicket.Amount = amountTotal;
-            }
+            var valorclasse = (basePrice.Value + (basePrice.Value * (classe.Value / 100)));
+            var total = valorclasse - (valorclasse * newTicket.Promotion / 100);
+            newTicket.Amount = total;
 
             _ticketService.Create(newTicket);
             return CreatedAtRoute("GetTicket", new { id = newTicket.Id.ToString() }, newTicket);

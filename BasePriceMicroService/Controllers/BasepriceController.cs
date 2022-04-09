@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using BasePriceMicroService.Services;
 using Microsoft.AspNetCore.Http;
@@ -37,16 +38,31 @@ namespace BasePriceMicroService.Controllers
         [HttpPost]
         public async Task<ActionResult<BasePrice>> Create(BasePrice newBaseprice)
         {
-            if(!await ServiceSeachAirportExisting.CheckAirportService())
-                return StatusCode(503, "Service Airport unavailable");
+            Airport originAirport, destinyAirport;
+            try
+            {
+                originAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
+            }
+            catch (HttpRequestException)
+            {
 
-            var originAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
-            var destinyAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
+                return StatusCode(400, "Airport Origin Not exist in database, verify try again");
+            }
+            try
+            {
+                destinyAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
+            }
+            catch (System.Exception)
+            {
+
+                return StatusCode(400, "Airport Destiny Not exist in database, verify try again");
+
+            }
+
 
             newBaseprice.Origin = originAirport;
 
             newBaseprice.Destiny = destinyAirport;
-
 
             _basepriceService.Create(newBaseprice);
 
@@ -54,9 +70,9 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, BasePrice upBaseprice)
+        public IActionResult Update(string id, BasePrice upBaseprice )
         {
-            var baseprice = _basepriceService.Get(id);
+            var baseprice = _basepriceService.Get(id); 
 
             if (baseprice == null)
                 return NotFound();

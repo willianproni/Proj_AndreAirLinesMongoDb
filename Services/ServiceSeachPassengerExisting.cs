@@ -17,7 +17,7 @@ namespace Services
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync("https://localhost:44384/api/Passenger/cpf/" + cpf);
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44384/api/Passenger/" + cpf);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
                 var passengerJson = JsonConvert.DeserializeObject<Passenger>(responseBody);

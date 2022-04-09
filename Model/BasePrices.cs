@@ -7,18 +7,15 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Model
 {
-    public class Ticket
+    public class BasePrice
     {
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string Id { get; set; }
-        public Flight Flight { get; set; }
-        public Passenger Passenger { get; set; }
-        public BasePrice BasePrice { get; set; }
-        public Classes Classes { get; set; }
-        public DateTime DateRegister { get; set; }
-        public decimal Amount { get; set; }
-        public decimal Promotion { get; set; }
+        public Airport Origin { get; set; }
+        public Airport Destiny { get; set; }
+        public decimal Value { get; set; }
+        public DateTime InclusionDate { get; set; }
         public string LoginUser { get; set; }
     }
 }

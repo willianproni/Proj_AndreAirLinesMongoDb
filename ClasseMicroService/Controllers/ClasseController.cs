@@ -25,7 +25,7 @@ namespace ClasseMicroService.Controllers
         public ActionResult<Classes> Get(string id)
         {
             var classe = _classeService.Get(id);
-
+             
             if (classe == null)
                 return NotFound();
 
