@@ -23,11 +23,14 @@ namespace PassengerMicroService.Services
         public Passenger Get(string id) =>
             _passenger.Find<Passenger>(passenger => passenger.Id == id).FirstOrDefault();
 
+        #region Checkers
+
         public bool VerifyPassengerExist(string cpfPassenger) =>
             _passenger.Find<Passenger>(passenger => passenger.Cpf == cpfPassenger).Any();
 
         public Passenger VerifyCpfPassenger(string cpf) =>
             _passenger.Find<Passenger>(passenger => passenger.Cpf == cpf).FirstOrDefault();
+        #endregion
 
         public Passenger Create(Passenger newPassenger)
         {

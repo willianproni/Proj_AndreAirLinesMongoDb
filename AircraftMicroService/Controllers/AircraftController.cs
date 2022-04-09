@@ -49,6 +49,9 @@ namespace AircraftMicroService.Controllers
         [HttpPost]
         public ActionResult<Aircraft> Create(Aircraft newAircraft)
         {
+
+        
+
             try
             {
                 if (_aircraftService.VerifyAircraftExist(newAircraft.Name))

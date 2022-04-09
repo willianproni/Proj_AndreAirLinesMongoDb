@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MVCWillFly.Models;
+using Model;
 
 namespace MVCWillFly.Data
 {
@@ -15,5 +16,7 @@ namespace MVCWillFly.Data
         }
 
         public DbSet<MVCWillFly.Models.Airport> Airport { get; set; }
+
+        public DbSet<Model.Airport> Airport_1 { get; set; }
     }
 }
