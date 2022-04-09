@@ -125,5 +125,22 @@ namespace Services
                 throw;
             }
         }
+
+        public static async Task<BasePrice> SeachFlightByBasePriceReferencyCodeIataOriginAndDestiny(string codIataOrigin, string codIataDestiny)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44374/api/Baseprice/Origin?codIataOrigin=" + codIataOrigin + "&codIataDestiny=" + codIataDestiny);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var DestinyOriginBasePriceJson = JsonConvert.DeserializeObject<BasePrice>(responseBody);
+                return DestinyOriginBasePriceJson;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Model
     {
         [bsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public string id { get; set; }
+        public string Id { get; set; }
         public User User { get; set; }
         public string EntityBefore { get; set; }
         public string EntityAfter { get; set; } 

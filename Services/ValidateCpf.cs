@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    public class ValidateCpfPasseger
+    public class ValidateCpf
     {
-        public static bool ValidCpfPassenger(string cpf)
+        public static bool VerifyValidCpf(string cpf)
         {
             int[] multiplierOne = new int[9] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
             int[] multiplierTwo = new int[10] { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };

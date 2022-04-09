@@ -35,6 +35,17 @@ namespace BasePriceMicroService.Controllers
             return baseprice;
         }
 
+        [HttpGet("Origin")]
+        public ActionResult<BasePrice> GetAirport(string codIataOrigin, string codIataDestiny)
+        {
+            var airport = _basepriceService.GetAirport(codIataOrigin, codIataDestiny);
+
+            if (airport == null)
+                return BadRequest("Airport Not found");
+
+            return airport;
+        }
+
         [HttpPost]
         public async Task<ActionResult<BasePrice>> Create(BasePrice newBaseprice)
         {

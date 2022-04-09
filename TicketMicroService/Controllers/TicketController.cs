@@ -41,7 +41,7 @@ namespace TicketMicroService.Controllers
             Passenger passenger;
             Flight flight;
             Classes classe;
-            BasePrice basePrice;
+            BasePrice voo;
             try
             {
                 passenger = await ServiceSeachPassengerExisting.SeachPassengerInApi(newTicket.Passenger.Cpf);
@@ -65,24 +65,28 @@ namespace TicketMicroService.Controllers
                 classe = await ServiceSeachApiExisting.SeachClasseIdInApi(newTicket.Classes.Id);
             }
             catch (HttpRequestException)
-            { 
+            {
 
                 return StatusCode(503, "Service Classe unavailable, start api Classe");
             }
 
             try
             {
-                basePrice = await ServiceSeachApiExisting.SeachBasepriceIdInApi(newTicket.BasePrice.Id);
+                voo = await ServiceSeachApiExisting.SeachFlightByBasePriceReferencyCodeIataOriginAndDestiny(flight.Origin.CodeIATA, flight.Destiny.CodeIATA);
             }
-            catch (HttpRequestException)
+            catch (System.Exception)
             {
-                return StatusCode(503);
+
+                throw;
             }
+
+
+
 
             newTicket.Passenger = passenger;
             newTicket.Flight = flight;
             newTicket.Classes = classe;
-            var valorclasse = (basePrice.Value + (basePrice.Value * (classe.Value / 100)));
+            var valorclasse = (voo.Value + (voo.Value * (classe.Value / 100)));
             var total = valorclasse - (valorclasse * newTicket.Promotion / 100);
             newTicket.Amount = total;
 

@@ -44,6 +44,15 @@ namespace UserMicroServices.Controllers
             {
                 try
                 {
+                    if (!ValidateCpf.VerifyValidCpf(newUser.Cpf))
+                        return Conflict("Cpf invalid, try again");
+
+                    var verifyUser = _userService.Get(newUser.Cpf);
+
+                    if (verifyUser != null)
+                        return Conflict("User Exist");
+
+
                     function = await ServiceSeachApiExisting.SeachFunctionIdInApi(newUser.Funcition.Id);
                     address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newUser.Address.Cep);
 

@@ -11,8 +11,8 @@ namespace ClasseMicroService.Services
         public ClasseService(IClasseDatabase settings)
         {
             var classe = new MongoClient(settings.ConnectionString);
-            var datetime = classe.GetDatabase(settings.DatabaseName);
-            _classe = datetime.GetCollection<Classes>(settings.ClasseCollectionName);
+            var datebase = classe.GetDatabase(settings.DatabaseName);
+            _classe = datebase.GetCollection<Classes>(settings.ClasseCollectionName);
         }
 
         public List<Classes> Get() =>

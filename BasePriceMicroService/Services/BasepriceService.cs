@@ -22,6 +22,9 @@ namespace BasePriceMicroService.Services
         public BasePrice Get(string id) =>
             _baseprice.Find<BasePrice>(baseprice => baseprice.Id == id).FirstOrDefault();
 
+        public BasePrice GetAirport(string codIataOrigin, string codIataDestiny) =>
+            _baseprice.Find<BasePrice>(baseprice => baseprice.Origin.CodeIATA == codIataOrigin && baseprice.Destiny.CodeIATA == codIataDestiny).FirstOrDefault();
+
         public BasePrice Create(BasePrice newBaseprice)
         {
             _baseprice.InsertOne(newBaseprice);

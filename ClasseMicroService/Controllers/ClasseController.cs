@@ -37,7 +37,7 @@ namespace ClasseMicroService.Controllers
         {
             _classeService.Create(classe);
 
-            return CreatedAtRoute("GerClasse", new { id = classe.Id.ToString() }, classe);
+            return CreatedAtRoute("GetClasse", new { id = classe.Id.ToString() }, classe);
         }
 
         [HttpPut("{id}")]

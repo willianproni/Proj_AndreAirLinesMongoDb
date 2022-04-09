@@ -54,7 +54,7 @@ namespace PassengerMicroService.Controllers
 
             try
             {
-                if (!ValidateCpfPasseger.ValidCpfPassenger(newPassenger.Cpf))
+                if (!ValidateCpf.VerifyValidCpf(newPassenger.Cpf))
                     return Conflict("Cpf invalid, try again");
 
                 if (_passengerService.VerifyPassengerExist(newPassenger.Cpf))
