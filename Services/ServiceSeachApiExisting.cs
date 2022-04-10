@@ -138,7 +138,22 @@ namespace Services
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
 
+        public static async Task<User> SeachUserInApiByLoginUser(string loginUser)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44325/api/User/" + loginUser);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var UserJson = JsonConvert.DeserializeObject<User>(responseBody);
+                return UserJson;
+            }
+            catch (Exception)
+            {
                 throw;
             }
         }

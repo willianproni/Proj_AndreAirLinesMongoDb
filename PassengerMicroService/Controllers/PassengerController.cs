@@ -50,6 +50,20 @@ namespace PassengerMicroService.Controllers
         [HttpPost]
         public async Task<ActionResult<Passenger>> Create(Passenger newPassenger)
         {
+            User permissionUser;
+
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newPassenger.LoginUser);
+
+                if (permissionUser.Funcition.Id != "1" || permissionUser.Funcition.Id != "2")
+                    return BadRequest("Access blocked, need manager/user permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
+
             var address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newPassenger.Address.Cep);
 
             try

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Model\Model.csproj" />
+    <ProjectReference Include="..\UserMicroServices\UserMicroServices.csproj" />
   </ItemGroup>
 
 </Project>

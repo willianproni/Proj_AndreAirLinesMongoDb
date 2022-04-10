@@ -24,15 +24,15 @@ namespace UserMicroServices.Controllers
         public ActionResult<List<User>> Get() =>
             _userService.Get();
 
-        [HttpGet("{cpf}", Name = "GetUser")]
-        public ActionResult<User> Get(string cpf)
+        [HttpGet("{loginUser}", Name = "GetLogin")]
+        public ActionResult<User> GetLogin(string loginUser)
         {
-            var returnSeachUser = _userService.Get(cpf);
+            var returnSeachUserLogin = _userService.GetLogin(loginUser);
 
-            if (returnSeachUser == null)
-                return BadRequest("User not Exist");
+            if (returnSeachUserLogin == null)
+                return BadRequest("User not Exist, try again");
 
-            return returnSeachUser;
+            return returnSeachUserLogin;
         }
 
         [HttpPost]
@@ -40,6 +40,20 @@ namespace UserMicroServices.Controllers
         {
             Function function;
             AddressDTO address;
+            User permissionUser;
+
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newUser.LoginUser);
+
+                if (permissionUser.Funcition.Id != "1")
+                    return BadRequest("Access blocked, need manager permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
+
             if (!string.IsNullOrEmpty(newUser.Cpf))
             {
                 try
@@ -57,11 +71,13 @@ namespace UserMicroServices.Controllers
                     address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newUser.Address.Cep);
 
                     newUser.Funcition = function;
+
                     newUser.Address.Cep = address.Cep;
                     newUser.Address.City = address.City;
                     newUser.Address.Street = address.State;
                     newUser.Address.District = address.District;
                     newUser.Address.Complement = address.Complement;
+
                     _userService.Create(newUser);
 
                     return CreatedAtRoute("GetUser", new { cpf = newUser.Cpf }, newUser);

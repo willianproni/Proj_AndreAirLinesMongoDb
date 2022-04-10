@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AircraftMicroService.Util;
 using Model;
 using MongoDB.Driver;
+using Services;
 
 namespace AircraftMicroService.Services
 {
@@ -28,8 +30,13 @@ namespace AircraftMicroService.Services
         public bool VerifyAircraftExist(string nameAircraft) =>
             _aircraft.Find<Aircraft>(aircraft => aircraft.Name == nameAircraft).Any();
 
-        public Aircraft Create(Aircraft newAircraft)
+        public async Task<Aircraft> Create(Aircraft newAircraft)
         {
+    /*        User Buscar = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAircraft.LoginUser);
+
+            if (Buscar.Funcition.Id != "1")
+                return newAircraft;*/
+
             _aircraft.InsertOne(newAircraft);
             return newAircraft;
         }

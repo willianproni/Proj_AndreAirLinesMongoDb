@@ -37,10 +37,23 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpPost] //Responsável por criar um novo Dado Aeroporto na Api
-        public async Task<ActionResult<Airport>> Create(Airport newAirport) 
+        public async Task<ActionResult<Airport>> Create(Airport newAirport)
         {
             AddressDTO addressAirport;
             AirportData InfoAirportData;
+            User permissionUser;
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAirport.LoginUser); //Verifica a Api User e retorna a informação referente ao LoginUser
+
+                if (permissionUser.Funcition.Id != "1") //Verifica se a função tem acesso a Post Airport
+                    return BadRequest("Access blocked, need manager permission"); //Ser não ter acesso retorna a BadRequest
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api"); //Se a API User estiver desligada retorna o seguinte erro
+            }
+
             try
             {
                 if (_airportService.VerifyCodeIata(newAirport.CodeIATA)) //Verifica se o Aeroporto já existe no database;
@@ -50,7 +63,7 @@ namespace AirportMicroServices.Controllers
 
                 InfoAirportData = await ServiceSeachApiExisting.SeachAirportDataSqlIdApi(newAirport.CodeIATA);//Serviço de verificação pelo CodeIata iformado
                                                                                                               //--> Verificano na Api do MicroServiço do 'AirportDataDaper'                                                    
-                //Serviço de Busca Usando o ViaCep
+                                                                                                              //Serviço de Busca Usando o ViaCep
                 newAirport.Address.Cep = addressAirport.Cep; //O cep do novo Aeroporto vai receber o cep vindo do ViaCep
                 newAirport.Address.State = addressAirport.State; //O State do novo Aeroporto vai receber o cep vindo do ViaCep
                 newAirport.Address.Street = addressAirport.Street; //A Street do novo Aeroporto vai receber o cep vindo do ViaCep

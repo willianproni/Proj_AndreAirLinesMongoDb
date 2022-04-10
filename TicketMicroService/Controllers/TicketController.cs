@@ -42,6 +42,20 @@ namespace TicketMicroService.Controllers
             Flight flight;
             Classes classe;
             BasePrice voo;
+            User permissionUser;
+
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newTicket.LoginUser);
+
+                if (permissionUser.Funcition.Id != "1" || permissionUser.Funcition.Id != "2")
+                    return BadRequest("Access blocked, need manager/user permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
+
             try
             {
                 passenger = await ServiceSeachPassengerExisting.SeachPassengerInApi(newTicket.Passenger.Cpf);

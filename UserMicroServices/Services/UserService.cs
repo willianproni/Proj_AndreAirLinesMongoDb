@@ -22,6 +22,9 @@ namespace UserMicroServices.Services
         public User Get(string cpf) =>
             _user.Find<User>(user => user.Cpf == cpf).FirstOrDefault();
 
+        public User GetLogin(string loginUser) =>
+            _user.Find<User>(login => login.Login == loginUser).FirstOrDefault();
+
         public User Create(User newUser)
         {
             _user.InsertOne(newUser);

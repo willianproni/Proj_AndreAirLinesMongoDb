@@ -50,6 +50,19 @@ namespace BasePriceMicroService.Controllers
         public async Task<ActionResult<BasePrice>> Create(BasePrice newBaseprice)
         {
             Airport originAirport, destinyAirport;
+            User permissionUser;
+
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newBaseprice.LoginUser);
+
+                if (permissionUser.Funcition.Id != "1")
+                    return BadRequest("Access blocked, need manager permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
             try
             {
                 originAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
