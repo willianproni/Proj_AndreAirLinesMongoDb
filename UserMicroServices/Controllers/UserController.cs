@@ -46,7 +46,7 @@ namespace UserMicroServices.Controllers
             {
                 permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newUser.LoginUser);
 
-                if (permissionUser.Funcition.Id != "1")
+                if (permissionUser.Function.Id != "1")
                     return BadRequest("Access blocked, need manager permission");
             }
             catch (HttpRequestException)
@@ -67,10 +67,10 @@ namespace UserMicroServices.Controllers
                         return Conflict("User Exist");
 
 
-                    function = await ServiceSeachApiExisting.SeachFunctionIdInApi(newUser.Funcition.Id);
+                    function = await ServiceSeachApiExisting.SeachFunctionIdInApi(newUser.Function.Id);
                     address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newUser.Address.Cep);
 
-                    newUser.Funcition = function;
+                    newUser.Function = function;
 
                     newUser.Address.Cep = address.Cep;
                     newUser.Address.City = address.City;

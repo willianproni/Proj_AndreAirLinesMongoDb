@@ -48,7 +48,7 @@ namespace TicketMicroService.Controllers
             {
                 permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newTicket.LoginUser);
 
-                if (permissionUser.Funcition.Id != "1" || permissionUser.Funcition.Id != "2")
+                if (permissionUser.Function.Id != "1" || permissionUser.Function.Id != "2")
                     return BadRequest("Access blocked, need manager/user permission");
             }
             catch (HttpRequestException)

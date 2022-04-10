@@ -56,7 +56,7 @@ namespace BasePriceMicroService.Controllers
             {
                 permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newBaseprice.LoginUser);
 
-                if (permissionUser.Funcition.Id != "1")
+                if (permissionUser.Function.Id != "1")
                     return BadRequest("Access blocked, need manager permission");
             }
             catch (HttpRequestException)

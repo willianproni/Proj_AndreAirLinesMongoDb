@@ -46,7 +46,7 @@ namespace AirportMicroServices.Controllers
             {
                 permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAirport.LoginUser); //Verifica a Api User e retorna a informação referente ao LoginUser
 
-                if (permissionUser.Funcition.Id != "1") //Verifica se a função tem acesso a Post Airport
+                if (permissionUser.Function.Id != "1") //Verifica se a função tem acesso a Post Airport
                     return BadRequest("Access blocked, need manager permission"); //Ser não ter acesso retorna a BadRequest
             }
             catch (HttpRequestException)

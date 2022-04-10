@@ -58,7 +58,7 @@ namespace AircraftMicroService.Controllers
             {
                 seahcUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAircraft.LoginUser);
 
-                if (seahcUser.Funcition.Id != "1")
+                if (seahcUser.Function.Id != "1")
                     return BadRequest("Access blocked, need manager permission");
             }
             catch (HttpRequestException)
@@ -71,7 +71,9 @@ namespace AircraftMicroService.Controllers
                 if (_aircraftService.VerifyAircraftExist(newAircraft.Name))
                     return Conflict("Aicraft already Registered, Try again");
 
-                await _aircraftService.Create(newAircraft);
+                _aircraftService.Create(newAircraft);
+
+
 
                 return CreatedAtRoute("GetAircraft", new { id = newAircraft.Id.ToString() }, newAircraft);
             }
@@ -79,6 +81,7 @@ namespace AircraftMicroService.Controllers
             {
                 return BadRequest("Exception " + e.Message);
             }
+
         }
 
         [HttpPut("{nameAircraft}")]
