@@ -11,7 +11,7 @@ Criação de MicroServiços
 
 <hr>
     
-<p>Desenvolvimneto de um sistema completo para Administração de Um Aeroporto(WillFly)
+<p>Desenvolvimento de um sistema completo para Administração de um Aeroporto(WillFly)
   <li>
   Cadastro de Passageiro
   <li>
@@ -31,7 +31,7 @@ Criação de MicroServiços
   
 <hr>
   
-<p>Sistema tem uma parte de adinisnitração onde se cadastra
+<p>Sistema tem uma parte de administração onde se cadastra
 <li>
   Acesso
   <li>
@@ -39,7 +39,7 @@ Criação de MicroServiços
     <li>
   Funcionários(User)
       
-<p>OBS: Funcionários só podem enditar API que seu acesso permite, ao tentarem altera uma API o sistema informa que o Funcinário não tem permisão de Editar
+<p>OBS: Funcionários só podem editar API que seu acesso permite, ao tentarem altera uma API que não tem acesso o sistema informa que o Funcinário não tem permisão de (Editar, criar, deletar)
     
 <hr>
      
