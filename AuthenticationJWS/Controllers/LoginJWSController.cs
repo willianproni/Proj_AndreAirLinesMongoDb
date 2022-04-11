@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AuthenticationJWS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -15,7 +16,7 @@ namespace AuthenticationJWS.Controllers
         [Route("login")]
         public async Task<ActionResult<dynamic>> AuthenticateAsync(User model)
         {
-            var user = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(model.LoginUser);
+            var user = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(model.Login);
 
             if (user == null)
                 return NotFound("User or password invalid, try again");
@@ -30,5 +31,26 @@ namespace AuthenticationJWS.Controllers
                 token = token
             };
         }
+
+
+        [HttpGet]
+        [Route("anonymous")]
+        [AllowAnonymous]
+        public string Anonymous() => "Anônimo";
+
+        [HttpGet]
+        [Route("authenticated")]
+        [Authorize]
+        public string Authenticated() => string.Format("Autenticado - {0}", User.Identity.Name);
+
+        [HttpGet]
+        [Route("employee")]
+        [Authorize(Roles = "employee,Aircraft")]
+        public string Employee() => "Funcionário";
+
+        [HttpGet]
+        [Route("manager")]
+        [Authorize(Roles = "manager")]
+        public string Manager() => "Gerente";
     }
 }

@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AuthenticationJWS\AuthenticationJWS.csproj" />
     <ProjectReference Include="..\LogMicroService\LogMicroService.csproj" />
     <ProjectReference Include="..\Model\Model.csproj" />
     <ProjectReference Include="..\UserMicroServices\UserMicroServices.csproj" />

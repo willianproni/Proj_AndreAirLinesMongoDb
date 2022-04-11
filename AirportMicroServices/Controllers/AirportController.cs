@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using AirportMicroServices.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -38,6 +39,7 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpPost] //Responsável por criar um novo Dado Aeroporto na Api
+        [Authorize(Roles = "Master")]
         public async Task<ActionResult<Airport>> Create(Airport newAirport)
         {
             AddressDTO addressAirport;
@@ -91,6 +93,7 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpPut("{iata}")] //Responsável por deletar um dado da Api referente ao CodeIata inserido
+        [Authorize(Roles = "Master")]
         public async Task<IActionResult> Update(string iata, Airport upAirport)
         {
 
@@ -122,6 +125,7 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpDelete("{iata}")] //Deleta um Airport pelo Código da iata
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string iata)
         {
 

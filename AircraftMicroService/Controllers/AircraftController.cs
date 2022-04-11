@@ -9,6 +9,7 @@ using Services;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AircraftMicroService.Controllers
 {
@@ -24,10 +25,13 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+
         public ActionResult<List<Aircraft>> Get() =>
             _aircraftService.Get();
 
         [HttpGet("{nameAircraft}", Name = "GetAircraft")]
+        [Authorize]
         public ActionResult<Aircraft> GetArcraftName(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
@@ -39,6 +43,7 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master")]
         public async Task<ActionResult<Aircraft>> Create(Aircraft newAircraft)
         {
             User seahcUser;
@@ -64,7 +69,7 @@ namespace AircraftMicroService.Controllers
                 var aircraftJson = JsonConvert.SerializeObject(newAircraft);
                 PostLogApi.PostLogInApi(new Log(newAircraft.LoginUser, null, aircraftJson, "Post"));
 
-                return CreatedAtRoute("GetAircraft", new { id = newAircraft.Id.ToString() }, newAircraft);
+                return CreatedAtRoute("GetAircraft", new { Name = newAircraft.Name.ToString() }, newAircraft);
             }
             catch (Exception e)
             {
@@ -74,6 +79,7 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpPut("{nameAircraft}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Update(string nameAircraft, Aircraft upAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
@@ -87,6 +93,7 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpDelete("{nameAircraft}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);

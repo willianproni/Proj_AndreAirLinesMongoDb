@@ -19,7 +19,7 @@ namespace AuthenticationJWS.Services
                 Subject = new ClaimsIdentity(new Claim[] //Informações relacionadas ao Usuário
                 {
                     new Claim(ClaimTypes.Name, user.Login.ToString()), //User.Identity.Login
-                    new Claim(ClaimTypes.Role, user.Function.Access.Id.ToString()), //User.Identity.Function.Access.Id
+                    new Claim(ClaimTypes.Role, user.Function.Access.Description.ToString()), //User.Identity.Function.Access.Id
                 }),
                 Expires = DateTime.UtcNow.AddHours(2), //Quanto tempo o Token demora para expirar
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
