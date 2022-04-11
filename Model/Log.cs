@@ -17,5 +17,14 @@ namespace Model
         public string EntityAfter { get; set; } 
         public string Operation { get; set; }
         public DateTime DataOperation { get; set; }
+
+        public Log(string userId, string entityBefore, string entityAfter, string operation)
+        {
+            UserId = userId;
+            EntityBefore = entityBefore;
+            EntityAfter = entityAfter;
+            Operation = operation;
+            DataOperation = DateTime.Now;
+        }
     }
 }

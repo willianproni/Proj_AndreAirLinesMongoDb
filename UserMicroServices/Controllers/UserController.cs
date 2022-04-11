@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Newtonsoft.Json;
 using Services;
 using UserMicroServices.Services;
 
@@ -40,19 +41,6 @@ namespace UserMicroServices.Controllers
         {
             Function function;
             AddressDTO address;
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newUser.LoginUser);
-
-                if (permissionUser.Function.Id != "1")
-                    return BadRequest("Access blocked, need manager permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
 
             if (!string.IsNullOrEmpty(newUser.Cpf))
             {
@@ -80,7 +68,10 @@ namespace UserMicroServices.Controllers
 
                     _userService.Create(newUser);
 
-                    return CreatedAtRoute("GetUser", new { cpf = newUser.Cpf }, newUser);
+                    var newUserJson = JsonConvert.SerializeObject(newUser);
+                    PostLogApi.PostLogInApi(new Log(newUser.LoginUser, null , newUserJson, "Post"));
+
+                    return CreatedAtRoute("GetLogin", new { LoginUser = newUser.LoginUser }, newUser);
                 }
                 catch (HttpRequestException)
                 {
@@ -94,12 +85,16 @@ namespace UserMicroServices.Controllers
         [HttpPut("{cpf}")]
         public IActionResult Update(string cpf, User upUser)
         {
-            var VerifyExistCpf = _userService.Get(cpf);
+            var SeachUser = _userService.Get(cpf);
 
-            if (VerifyExistCpf == null)
+            if (SeachUser == null)
                 return BadRequest("User not Exist");
 
             _userService.Update(cpf, upUser);
+
+            var updateUserJson = JsonConvert.SerializeObject(upUser);
+            var oldUser = JsonConvert.SerializeObject(SeachUser);
+            PostLogApi.PostLogInApi(new Log(upUser.LoginUser, oldUser, updateUserJson, "Update"));
 
             return NoContent();
         }

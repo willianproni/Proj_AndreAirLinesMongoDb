@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Newtonsoft.Json;
 using Services;
 using TicketMicroService.Services;
 
@@ -48,7 +49,7 @@ namespace TicketMicroService.Controllers
             {
                 permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newTicket.LoginUser);
 
-                if (permissionUser.Function.Id != "1" || permissionUser.Function.Id != "2")
+                if (permissionUser.Function.Id != "1" && permissionUser.Function.Id != "2")
                     return BadRequest("Access blocked, need manager/user permission");
             }
             catch (HttpRequestException)
@@ -94,9 +95,6 @@ namespace TicketMicroService.Controllers
                 throw;
             }
 
-
-
-
             newTicket.Passenger = passenger;
             newTicket.Flight = flight;
             newTicket.Classes = classe;
@@ -105,18 +103,40 @@ namespace TicketMicroService.Controllers
             newTicket.Amount = total;
 
             _ticketService.Create(newTicket);
+
+            var newTicketJson = JsonConvert.SerializeObject(newTicket);
+            PostLogApi.PostLogInApi(new Log(newTicket.LoginUser, null, newTicketJson, "Post"));
+
             return CreatedAtRoute("GetTicket", new { id = newTicket.Id.ToString() }, newTicket);
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Ticket upTicket)
+        public async Task<IActionResult> Update(string id, Ticket upTicket)
         {
-            var ticket = _ticketService.Get(id);
+            User permissionUser;
+
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upTicket.LoginUser);
+
+                if (permissionUser.Function.Id != "1" || permissionUser.Function.Id != "2")
+                    return BadRequest("Access blocked, need manager/user permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
+
+            var seachTicket = _ticketService.Get(id);
 
             if (upTicket == null)
                 return NotFound();
 
             _ticketService.Update(id, upTicket);
+
+            var updateTicket = JsonConvert.SerializeObject(upTicket);
+            var oldTicket = JsonConvert.SerializeObject(seachTicket);
+            PostLogApi.PostLogInApi(new Log(upTicket.LoginUser, oldTicket, updateTicket, "Update"));
 
             return NoContent();
         }

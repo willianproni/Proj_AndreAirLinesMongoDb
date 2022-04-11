@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using Model.DataModel;
+using Newtonsoft.Json;
 using Services;
 
 namespace AirportMicroServices.Controllers
@@ -76,6 +77,9 @@ namespace AirportMicroServices.Controllers
 
                 _airportService.Create(newAirport); //Cria um novo Aeroporto no database
 
+                var newAirportJson = JsonConvert.SerializeObject(newAirport); //Converte o novo aeroporto em arquivo Json
+                PostLogApi.PostLogInApi(new Log(newAirport.LoginUser, null, newAirportJson, "Post")); //Chama o serviço de cadastrar Log
+
                 return CreatedAtRoute("GetAirport", new { id = newAirport.Id.ToString() }, newAirport); //Retorna a os dados do novo aeroporto inserido no do Post da api.
 
             }
@@ -87,8 +91,22 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpPut("{iata}")] //Responsável por deletar um dado da Api referente ao CodeIata inserido
-        public IActionResult Update(string iata, Airport upAirport)
+        public async Task<IActionResult> Update(string iata, Airport upAirport)
         {
+
+            User permissionUser;
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upAirport.LoginUser); //Verifica a Api User e retorna a informação referente ao LoginUser
+
+                if (permissionUser.Function.Id != "1") //Verifica se a função tem acesso a Update Airport
+                    return BadRequest("Access blocked, need manager permission"); //Ser não ter acesso retorna a BadRequest
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api"); //Se a API User estiver desligada retorna o seguinte erro
+            }
+
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
 
             if (SeachAirport == null)                                                                       //Se o aeroporto não for encontrado -->
@@ -96,12 +114,17 @@ namespace AirportMicroServices.Controllers
 
             _airportService.Uptade(iata, upAirport); //Realiza o Serviço de Update
 
+            var updateAirportJson = JsonConvert.SerializeObject(upAirport);
+            var oldAirportJson = JsonConvert.SerializeObject(SeachAirport); 
+            PostLogApi.PostLogInApi(new Log(upAirport.LoginUser, oldAirportJson, updateAirportJson, "Update")); //Chama o serviço de cadastrar Log
+
             return NoContent();
         }
 
         [HttpDelete("{iata}")] //Deleta um Airport pelo Código da iata
         public IActionResult Delete(string iata)
         {
+
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
 
             if (SeachAirport == null)                                                                       //Se o aeroporto não for encontrado -->

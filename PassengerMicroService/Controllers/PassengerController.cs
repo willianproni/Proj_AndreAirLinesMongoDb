@@ -7,6 +7,7 @@ using Services;
 using System;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace PassengerMicroService.Controllers
 {
@@ -56,7 +57,7 @@ namespace PassengerMicroService.Controllers
             {
                 permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newPassenger.LoginUser);
 
-                if (permissionUser.Function.Id != "1" || permissionUser.Function.Id != "2")
+                if (permissionUser.Function.Id != "1" && permissionUser.Function.Id != "2")
                     return BadRequest("Access blocked, need manager/user permission");
             }
             catch (HttpRequestException)
@@ -101,22 +102,41 @@ namespace PassengerMicroService.Controllers
                 return StatusCode(443, "Service ViaCep Off");
             }
 
+            var newPassengerJson = JsonConvert.SerializeObject(newPassenger);
+            PostLogApi.PostLogInApi(new Log(newPassenger.LoginUser, null, newPassengerJson, "Post"));
+
 
             return CreatedAtRoute("GetPassenger", new { id = newPassenger.Id.ToString() }, newPassenger);
 
         }
 
         [HttpPut("{cpf}")]
-        public IActionResult Update(string cpf, Passenger upAassenger)
+        public async Task<IActionResult> Update(string cpf, Passenger upAassenger)
         {
+            User permissionUser;
+
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upAassenger.LoginUser);
+
+                if (permissionUser.Function.Id != "1" && permissionUser.Function.Id != "2")
+                    return BadRequest("Access blocked, need manager/user permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
 
             var seachPassenger = _passengerService.VerifyCpfPassenger(cpf);
-
 
             if (seachPassenger == null)
                 return BadRequest("");
 
             _passengerService.Update(cpf, upAassenger);
+
+            var UpdatePassengerJson = JsonConvert.SerializeObject(upAassenger);
+            var OldPassengerJson = JsonConvert.SerializeObject(seachPassenger);
+            PostLogApi.PostLogInApi(new Log(upAassenger.LoginUser, OldPassengerJson, UpdatePassengerJson, "Update"));
 
             return NoContent();
         }

@@ -8,6 +8,7 @@ using UserMicroServices.Services;
 using Services;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace AircraftMicroService.Controllers
 {
@@ -25,19 +26,6 @@ namespace AircraftMicroService.Controllers
         [HttpGet]
         public ActionResult<List<Aircraft>> Get() =>
             _aircraftService.Get();
-
-        /*        [HttpGet("{id:length(24)}", Name = "GetAircraft")]
-                public ActionResult<Aircraft> Get(string id)
-                {
-                    var aircraft = _aircraftService.Get(id);
-
-                    if (aircraft == null)
-                    {
-                        return NotFound();
-                    }
-
-                    return aircraft;
-                }*/
 
         [HttpGet("{nameAircraft}", Name = "GetAircraft")]
         public ActionResult<Aircraft> GetArcraftName(string nameAircraft)
@@ -73,7 +61,8 @@ namespace AircraftMicroService.Controllers
 
                 _aircraftService.Create(newAircraft);
 
-
+                var aircraftJson = JsonConvert.SerializeObject(newAircraft);
+                PostLogApi.PostLogInApi(new Log(newAircraft.LoginUser, null, aircraftJson, "Post"));
 
                 return CreatedAtRoute("GetAircraft", new { id = newAircraft.Id.ToString() }, newAircraft);
             }

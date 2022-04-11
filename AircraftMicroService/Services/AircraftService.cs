@@ -11,20 +11,12 @@ namespace AircraftMicroService.Services
     public class AircraftService
     {
         private readonly IMongoCollection<Aircraft> _aircraft;
-        private readonly IMongoCollection<Log> _log;
 
         public AircraftService(IAircraftDatabase settings)
         {
             var aircraft = new MongoClient(settings.ConnectionString);
             var database = aircraft.GetDatabase(settings.DatabaseName);
             _aircraft = database.GetCollection<Aircraft>(settings.AircraftCollectionName);
-        }
-
-        public AircraftService(ILogDatabase settings)
-        {
-            var log = new MongoClient(settings.ConnectionString);
-            var database = log.GetDatabase(settings.DatabaseName);
-            _log = database.GetCollection<Log>(settings.LogCollectionName);
         }
 
         public List<Aircraft> Get() =>
@@ -44,13 +36,6 @@ namespace AircraftMicroService.Services
             _aircraft.InsertOne(newAircraft);
             return newAircraft;
         }
-
-        public Log Create(Log newLog)
-        {
-            _log.InsertOne(newLog);
-            return newLog;
-        }
-
         public void Update(string nameAircraft, Aircraft upAircraft) =>
             _aircraft.ReplaceOne(aircraft => aircraft.Name == nameAircraft, upAircraft);
 

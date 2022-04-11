@@ -5,6 +5,7 @@ using BasePriceMicroService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Newtonsoft.Json;
 using Services;
 
 namespace BasePriceMicroService.Controllers
@@ -63,6 +64,7 @@ namespace BasePriceMicroService.Controllers
             {
                 return StatusCode(503, "Service User unavailable, start Api");
             }
+
             try
             {
                 originAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
@@ -72,6 +74,7 @@ namespace BasePriceMicroService.Controllers
 
                 return StatusCode(400, "Airport Origin Not exist in database, verify try again");
             }
+
             try
             {
                 destinyAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
@@ -90,18 +93,39 @@ namespace BasePriceMicroService.Controllers
 
             _basepriceService.Create(newBaseprice);
 
+            var newBasePriceJson = JsonConvert.SerializeObject(newBaseprice);
+            PostLogApi.PostLogInApi(new Log(newBaseprice.LoginUser, null, newBasePriceJson, "Post"));
+
             return CreatedAtRoute("GetBasePrice", new { id = newBaseprice.Id.ToString() }, newBaseprice);
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, BasePrice upBaseprice )
+        public async Task<IActionResult> Update(string id, BasePrice upBaseprice)
         {
-            var baseprice = _basepriceService.Get(id); 
+            User permissionUser;
 
-            if (baseprice == null)
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upBaseprice.LoginUser);
+
+                if (permissionUser.Function.Id != "1")
+                    return BadRequest("Access blocked, need manager permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
+
+            var seachBasePrice = _basepriceService.Get(id);
+
+            if (seachBasePrice == null)
                 return NotFound();
 
             _basepriceService.Update(id, upBaseprice);
+
+            var updateBasePriceJson = JsonConvert.SerializeObject(upBaseprice);
+            var oldBasePriceJson = JsonConvert.SerializeObject(seachBasePrice);
+            PostLogApi.PostLogInApi(new Log(upBaseprice.LoginUser, oldBasePriceJson, updateBasePriceJson, "Update"));
 
             return NoContent();
         }

@@ -7,6 +7,7 @@ using System;
 using Services;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace FlightMicroService.Controllers
 {
@@ -47,7 +48,7 @@ namespace FlightMicroService.Controllers
             {
                 permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newFlight.LoginUser);
 
-                if (permissionUser.Function.Id != "1" || permissionUser.Function.Id != "2")
+                if (permissionUser.Function.Id != "1" && permissionUser.Function.Id != "2")
                     return BadRequest("Access blocked, need manager/user permission");
             }
             catch (HttpRequestException)
@@ -65,6 +66,9 @@ namespace FlightMicroService.Controllers
                 newFlight.Destiny = aiportDestiny;
                 newFlight.Aircraft = aircraftApi;
 
+                var newFlightJson = JsonConvert.SerializeObject(newFlight);
+                PostLogApi.PostLogInApi(new Log(newFlight.LoginUser, null, newFlightJson, "Post"));
+
                 _flightService.Create(newFlight);
 
                 return CreatedAtRoute("GetFlight", new { id = newFlight.Id.ToString() }, newFlight);
@@ -76,14 +80,32 @@ namespace FlightMicroService.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Flight upFlight)
+        public async Task<IActionResult> Update(string id, Flight upFlight)
         {
-            var flight = _flightService.Get(id);
+            User permissionUser;
 
-            if (flight == null)
+            try
+            {
+                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upFlight.LoginUser);
+
+                if (permissionUser.Function.Id != "1" && permissionUser.Function.Id != "2")
+                    return BadRequest("Access blocked, need manager/user permission");
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(503, "Service User unavailable, start Api");
+            }
+
+            var seachFlight = _flightService.Get(id);
+
+            if (seachFlight == null)
                 return NotFound();
 
             _flightService.Update(id, upFlight);
+
+            var updateFlight = JsonConvert.SerializeObject(upFlight);
+            var oldFlight = JsonConvert.SerializeObject(seachFlight);
+            PostLogApi.PostLogInApi(new Log(upFlight.LoginUser, oldFlight, updateFlight, "Update"));
 
             return NoContent();
         }
