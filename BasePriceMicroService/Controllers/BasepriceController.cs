@@ -2,9 +2,11 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using BasePriceMicroService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Newtonsoft.Json;
 using Services;
 
 namespace BasePriceMicroService.Controllers
@@ -21,6 +23,7 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<BasePrice>> Get() =>
             _basepriceService.Get();
 
@@ -35,7 +38,8 @@ namespace BasePriceMicroService.Controllers
             return baseprice;
         }
 
-        [HttpGet("Origin")]
+        [HttpGet("AirportOriginAndDestiny")]
+        [Authorize]
         public ActionResult<BasePrice> GetAirport(string codIataOrigin, string codIataDestiny)
         {
             var airport = _basepriceService.GetAirport(codIataOrigin, codIataDestiny);
@@ -47,22 +51,11 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master")]
         public async Task<ActionResult<BasePrice>> Create(BasePrice newBaseprice)
         {
             Airport originAirport, destinyAirport;
-            User permissionUser;
 
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newBaseprice.LoginUser);
-
-                if (permissionUser.Funcition.Id != "1")
-                    return BadRequest("Access blocked, need manager permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
             try
             {
                 originAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Origin.CodeIATA);
@@ -72,6 +65,7 @@ namespace BasePriceMicroService.Controllers
 
                 return StatusCode(400, "Airport Origin Not exist in database, verify try again");
             }
+
             try
             {
                 destinyAirport = await ServiceSeachApiExisting.SeachAiportInApi(newBaseprice.Destiny.CodeIATA);
@@ -90,23 +84,32 @@ namespace BasePriceMicroService.Controllers
 
             _basepriceService.Create(newBaseprice);
 
+            var newBasePriceJson = JsonConvert.SerializeObject(newBaseprice);
+            PostLogApi.PostLogInApi(new Log(newBaseprice.LoginUser, null, newBasePriceJson, "Post"));
+
             return CreatedAtRoute("GetBasePrice", new { id = newBaseprice.Id.ToString() }, newBaseprice);
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, BasePrice upBaseprice )
+        [Authorize(Roles = "Master")]
+        public IActionResult Update(string id, BasePrice upBaseprice)
         {
-            var baseprice = _basepriceService.Get(id); 
+            var seachBasePrice = _basepriceService.Get(id);
 
-            if (baseprice == null)
+            if (seachBasePrice == null)
                 return NotFound();
 
             _basepriceService.Update(id, upBaseprice);
+
+            var updateBasePriceJson = JsonConvert.SerializeObject(upBaseprice);
+            var oldBasePriceJson = JsonConvert.SerializeObject(seachBasePrice);
+            PostLogApi.PostLogInApi(new Log(upBaseprice.LoginUser, oldBasePriceJson, updateBasePriceJson, "Update"));
 
             return NoContent();
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string id)
         {
             var baseprice = _basepriceService.Get(id);

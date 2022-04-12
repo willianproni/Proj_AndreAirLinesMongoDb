@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ClasseMicroService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -18,10 +19,12 @@ namespace ClasseMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Classes>> Get() =>
             _classeService.Get();
 
         [HttpGet("{id}", Name = "GetClasse")]
+        [Authorize]
         public ActionResult<Classes> Get(string id)
         {
             var classe = _classeService.Get(id);
@@ -33,6 +36,7 @@ namespace ClasseMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master")]
         public ActionResult<Classes> Create(Classes classe)
         {
             _classeService.Create(classe);
@@ -41,6 +45,7 @@ namespace ClasseMicroService.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Update(string id, Classes newClasse)
         {
             var classe = _classeService.Get(id);
@@ -54,6 +59,7 @@ namespace ClasseMicroService.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string id)
         {
             var classe = _classeService.Get(id);

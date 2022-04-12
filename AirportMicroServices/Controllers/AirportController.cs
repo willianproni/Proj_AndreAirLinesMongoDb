@@ -2,10 +2,12 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using AirportMicroServices.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using Model.DataModel;
+using Newtonsoft.Json;
 using Services;
 
 namespace AirportMicroServices.Controllers
@@ -22,10 +24,12 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpGet] //Responsável por trazer todos os Aeroportos Cadastrado
+        [AllowAnonymous]
         public ActionResult<List<Airport>> Get() => //Função de buscar todos os Aeroportos
             _airportService.Get();                  // ###
 
         [HttpGet("{iata}", Name = "GetAirport")]
+        [Authorize]
         public ActionResult<Airport> GetSeachAirportIata(string iata) //Responsável por trazer uma dado especifico pelo CodeIata
         {
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o Aeroporto busca existe
@@ -37,22 +41,11 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpPost] //Responsável por criar um novo Dado Aeroporto na Api
+        [Authorize(Roles = "Master")]
         public async Task<ActionResult<Airport>> Create(Airport newAirport)
         {
             AddressDTO addressAirport;
             AirportData InfoAirportData;
-            User permissionUser;
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAirport.LoginUser); //Verifica a Api User e retorna a informação referente ao LoginUser
-
-                if (permissionUser.Funcition.Id != "1") //Verifica se a função tem acesso a Post Airport
-                    return BadRequest("Access blocked, need manager permission"); //Ser não ter acesso retorna a BadRequest
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api"); //Se a API User estiver desligada retorna o seguinte erro
-            }
 
             try
             {
@@ -76,6 +69,9 @@ namespace AirportMicroServices.Controllers
 
                 _airportService.Create(newAirport); //Cria um novo Aeroporto no database
 
+                var newAirportJson = JsonConvert.SerializeObject(newAirport); //Converte o novo aeroporto em arquivo Json
+                PostLogApi.PostLogInApi(new Log(newAirport.LoginUser, null, newAirportJson, "Post")); //Chama o serviço de cadastrar Log
+
                 return CreatedAtRoute("GetAirport", new { id = newAirport.Id.ToString() }, newAirport); //Retorna a os dados do novo aeroporto inserido no do Post da api.
 
             }
@@ -87,8 +83,10 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpPut("{iata}")] //Responsável por deletar um dado da Api referente ao CodeIata inserido
+        [Authorize(Roles = "Master")]
         public IActionResult Update(string iata, Airport upAirport)
         {
+
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
 
             if (SeachAirport == null)                                                                       //Se o aeroporto não for encontrado -->
@@ -96,12 +94,18 @@ namespace AirportMicroServices.Controllers
 
             _airportService.Uptade(iata, upAirport); //Realiza o Serviço de Update
 
+            var updateAirportJson = JsonConvert.SerializeObject(upAirport);
+            var oldAirportJson = JsonConvert.SerializeObject(SeachAirport); 
+            PostLogApi.PostLogInApi(new Log(upAirport.LoginUser, oldAirportJson, updateAirportJson, "Update")); //Chama o serviço de cadastrar Log
+
             return NoContent();
         }
 
         [HttpDelete("{iata}")] //Deleta um Airport pelo Código da iata
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string iata)
         {
+
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
 
             if (SeachAirport == null)                                                                       //Se o aeroporto não for encontrado -->

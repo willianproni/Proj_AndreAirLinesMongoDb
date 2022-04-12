@@ -11,6 +11,6 @@ namespace Model
         public string Password { get; set; }
         public string Login { get; set; }
         public string Sector { get; set; }
-        public Function Funcition { get; set; }
+        public Function Function { get; set; }
     }
 }

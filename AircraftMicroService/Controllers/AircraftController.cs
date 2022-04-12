@@ -8,6 +8,8 @@ using UserMicroServices.Services;
 using Services;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AircraftMicroService.Controllers
 {
@@ -23,23 +25,12 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Aircraft>> Get() =>
             _aircraftService.Get();
 
-        /*        [HttpGet("{id:length(24)}", Name = "GetAircraft")]
-                public ActionResult<Aircraft> Get(string id)
-                {
-                    var aircraft = _aircraftService.Get(id);
-
-                    if (aircraft == null)
-                    {
-                        return NotFound();
-                    }
-
-                    return aircraft;
-                }*/
-
         [HttpGet("{nameAircraft}", Name = "GetAircraft")]
+        [Authorize]
         public ActionResult<Aircraft> GetArcraftName(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
@@ -51,6 +42,7 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master")]
         public async Task<ActionResult<Aircraft>> Create(Aircraft newAircraft)
         {
             User seahcUser;
@@ -58,7 +50,7 @@ namespace AircraftMicroService.Controllers
             {
                 seahcUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAircraft.LoginUser);
 
-                if (seahcUser.Funcition.Id != "1")
+                if (seahcUser.Function.Id != "1")
                     return BadRequest("Access blocked, need manager permission");
             }
             catch (HttpRequestException)
@@ -71,17 +63,22 @@ namespace AircraftMicroService.Controllers
                 if (_aircraftService.VerifyAircraftExist(newAircraft.Name))
                     return Conflict("Aicraft already Registered, Try again");
 
-                await _aircraftService.Create(newAircraft);
+                _aircraftService.Create(newAircraft);
 
-                return CreatedAtRoute("GetAircraft", new { id = newAircraft.Id.ToString() }, newAircraft);
+                var aircraftJson = JsonConvert.SerializeObject(newAircraft);
+                PostLogApi.PostLogInApi(new Log(newAircraft.LoginUser, null, aircraftJson, "Post"));
+
+                return CreatedAtRoute("GetAircraft", new { Name = newAircraft.Name.ToString() }, newAircraft);
             }
             catch (Exception e)
             {
                 return BadRequest("Exception " + e.Message);
             }
+
         }
 
         [HttpPut("{nameAircraft}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Update(string nameAircraft, Aircraft upAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
@@ -95,6 +92,7 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpDelete("{nameAircraft}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
