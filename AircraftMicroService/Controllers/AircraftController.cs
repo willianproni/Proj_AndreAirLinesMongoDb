@@ -45,18 +45,6 @@ namespace AircraftMicroService.Controllers
         [Authorize(Roles = "Master")]
         public async Task<ActionResult<Aircraft>> Create(Aircraft newAircraft)
         {
-            User seahcUser;
-            try
-            {
-                seahcUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAircraft.LoginUser);
-
-                if (seahcUser.Function.Id != "1")
-                    return BadRequest("Access blocked, need manager permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
 
             try
             {
