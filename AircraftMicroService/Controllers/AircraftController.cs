@@ -58,7 +58,7 @@ namespace AircraftMicroService.Controllers
             {
                 seahcUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAircraft.LoginUser);
 
-                if (seahcUser.Funcition.Id != "1")
+                if (seahcUser.Function.Id != "1")
                     return BadRequest("Access blocked, need manager permission");
             }
             catch (HttpRequestException)
