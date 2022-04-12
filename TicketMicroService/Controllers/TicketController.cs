@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -22,10 +23,12 @@ namespace TicketMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Ticket>> Get() =>
             _ticketService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetTicket")]
+        [Authorize]
         public ActionResult<Ticket> Get(string id)
         {
             var ticket = _ticketService.Get(id);
@@ -37,25 +40,14 @@ namespace TicketMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master, User")]
+
         public async Task<ActionResult<Ticket>> Create(Ticket newTicket)
         {
             Passenger passenger;
             Flight flight;
             Classes classe;
             BasePrice voo;
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newTicket.LoginUser);
-
-                if (permissionUser.Function.Id != "1" && permissionUser.Function.Id != "2")
-                    return BadRequest("Access blocked, need manager/user permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
 
             try
             {
@@ -111,21 +103,9 @@ namespace TicketMicroService.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, Ticket upTicket)
+        [Authorize(Roles = "Master, User")]
+        public IActionResult Update(string id, Ticket upTicket)
         {
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upTicket.LoginUser);
-
-                if (permissionUser.Function.Id != "1" || permissionUser.Function.Id != "2")
-                    return BadRequest("Access blocked, need manager/user permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
 
             var seachTicket = _ticketService.Get(id);
 
@@ -142,6 +122,7 @@ namespace TicketMicroService.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Delete(string id)
         {
             var ticket = _ticketService.Get(id);

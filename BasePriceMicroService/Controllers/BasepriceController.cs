@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using BasePriceMicroService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -22,6 +23,7 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<BasePrice>> Get() =>
             _basepriceService.Get();
 
@@ -36,7 +38,8 @@ namespace BasePriceMicroService.Controllers
             return baseprice;
         }
 
-        [HttpGet("Origin")]
+        [HttpGet("AirportOriginAndDestiny")]
+        [Authorize]
         public ActionResult<BasePrice> GetAirport(string codIataOrigin, string codIataDestiny)
         {
             var airport = _basepriceService.GetAirport(codIataOrigin, codIataDestiny);
@@ -48,6 +51,7 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master")]
         public async Task<ActionResult<BasePrice>> Create(BasePrice newBaseprice)
         {
             Airport originAirport, destinyAirport;
@@ -87,7 +91,8 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, BasePrice upBaseprice)
+        [Authorize(Roles = "Master")]
+        public IActionResult Update(string id, BasePrice upBaseprice)
         {
             var seachBasePrice = _basepriceService.Get(id);
 
@@ -104,6 +109,7 @@ namespace BasePriceMicroService.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string id)
         {
             var baseprice = _basepriceService.Get(id);

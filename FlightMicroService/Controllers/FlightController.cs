@@ -8,6 +8,7 @@ using Services;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FlightMicroService.Controllers
 {
@@ -23,10 +24,12 @@ namespace FlightMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Flight>> Get() =>
             _flightService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetFlight")]
+        [Authorize]
         public ActionResult<Flight> get(string id)
         {
             var flight = _flightService.Get(id);
@@ -38,6 +41,7 @@ namespace FlightMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master, User")]
         public async Task<ActionResult<Flight>> Create(Flight newFlight)
         {
             Airport aiportOrigin, aiportDestiny;
@@ -80,6 +84,7 @@ namespace FlightMicroService.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
+        [Authorize(Roles = "Master, User")]
         public async Task<IActionResult> Update(string id, Flight upFlight)
         {
             User permissionUser;
@@ -111,6 +116,7 @@ namespace FlightMicroService.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Delete(string id)
         {
             var flight = _flightService.Get(id);

@@ -53,7 +53,7 @@ namespace PassengerMicroService.Controllers
         }
 
         [HttpPost]
-        [Route("Master")]
+        [Route("Master, User")]
         public async Task<ActionResult<Passenger>> Create(Passenger newPassenger)
         {
             var address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newPassenger.Address.Cep);
@@ -102,7 +102,7 @@ namespace PassengerMicroService.Controllers
         }
 
         [HttpPut("{cpf}")]
-        [Authorize(Roles = "Master")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Update(string cpf, Passenger upAassenger)
         {
 
@@ -121,7 +121,7 @@ namespace PassengerMicroService.Controllers
         }
 
         [HttpDelete("{cpf}")]
-        [Authorize(Roles = "Master")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Delete(string cpf)
         {
             var seachPassenger = _passengerService.VerifyCpfPassenger(cpf);
