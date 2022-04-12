@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Newtonsoft.Json;
 using Services;
 using UserMicroServices.Services;
 
@@ -21,13 +23,14 @@ namespace UserMicroServices.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<User>> Get() =>
             _userService.Get();
 
         [HttpGet("{loginUser}", Name = "GetLogin")]
-        public ActionResult<User> GetLogin(string loginUser)
+        public ActionResult<User> GetLoginUser(string loginUser)
         {
-            var returnSeachUserLogin = _userService.GetLogin(loginUser);
+            var returnSeachUserLogin = _userService.GetLoginUser(loginUser);
 
             if (returnSeachUserLogin == null)
                 return BadRequest("User not Exist, try again");
@@ -35,24 +38,25 @@ namespace UserMicroServices.Controllers
             return returnSeachUserLogin;
         }
 
+        [HttpGet("LoginAndPassword", Name = "GetLoginAndPassword")]
+        [Authorize]
+        public ActionResult<User> GetLoginAndPassword(string login, string password)
+        {
+            var SeachUser = _userService.GetLoginAndPassword(login, password);
+
+            if (SeachUser == null)
+                return BadRequest("Login or Password incorrect, try again");
+
+            return SeachUser;
+        }
+
         [HttpPost]
+        [Authorize(Roles = "Master")]
+
         public async Task<ActionResult<User>> Create(User newUser)
         {
             Function function;
             AddressDTO address;
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newUser.LoginUser);
-
-                if (permissionUser.Funcition.Id != "1")
-                    return BadRequest("Access blocked, need manager permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
 
             if (!string.IsNullOrEmpty(newUser.Cpf))
             {
@@ -67,10 +71,10 @@ namespace UserMicroServices.Controllers
                         return Conflict("User Exist");
 
 
-                    function = await ServiceSeachApiExisting.SeachFunctionIdInApi(newUser.Funcition.Id);
+                    function = await ServiceSeachApiExisting.SeachFunctionIdInApi(newUser.Function.Id);
                     address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newUser.Address.Cep);
 
-                    newUser.Funcition = function;
+                    newUser.Function = function;
 
                     newUser.Address.Cep = address.Cep;
                     newUser.Address.City = address.City;
@@ -80,7 +84,10 @@ namespace UserMicroServices.Controllers
 
                     _userService.Create(newUser);
 
-                    return CreatedAtRoute("GetUser", new { cpf = newUser.Cpf }, newUser);
+                    var newUserJson = JsonConvert.SerializeObject(newUser);
+                    PostLogApi.PostLogInApi(new Log(newUser.LoginUser, null , newUserJson, "Post"));
+
+                    return CreatedAtRoute("GetLogin", new { LoginUser = newUser.LoginUser }, newUser);
                 }
                 catch (HttpRequestException)
                 {
@@ -92,19 +99,29 @@ namespace UserMicroServices.Controllers
         }
 
         [HttpPut("{cpf}")]
+        [Authorize(Roles = "Master")]
+
+
         public IActionResult Update(string cpf, User upUser)
         {
-            var VerifyExistCpf = _userService.Get(cpf);
+            var SeachUser = _userService.Get(cpf);
 
-            if (VerifyExistCpf == null)
+            if (SeachUser == null)
                 return BadRequest("User not Exist");
 
             _userService.Update(cpf, upUser);
+
+            var updateUserJson = JsonConvert.SerializeObject(upUser);
+            var oldUser = JsonConvert.SerializeObject(SeachUser);
+            PostLogApi.PostLogInApi(new Log(upUser.LoginUser, oldUser, updateUserJson, "Update"));
 
             return NoContent();
         }
 
         [HttpDelete("{cpf}")]
+        [Authorize(Roles = "Master")]
+
+
         public IActionResult Delete(string cpf)
         {
             var VerifyExistCpf = _userService.Get(cpf);

@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Newtonsoft.Json;
 using Services;
 using TicketMicroService.Services;
 
@@ -21,10 +23,12 @@ namespace TicketMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Ticket>> Get() =>
             _ticketService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetTicket")]
+        [Authorize]
         public ActionResult<Ticket> Get(string id)
         {
             var ticket = _ticketService.Get(id);
@@ -36,25 +40,14 @@ namespace TicketMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master, User")]
+
         public async Task<ActionResult<Ticket>> Create(Ticket newTicket)
         {
             Passenger passenger;
             Flight flight;
             Classes classe;
             BasePrice voo;
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newTicket.LoginUser);
-
-                if (permissionUser.Funcition.Id != "1" || permissionUser.Funcition.Id != "2")
-                    return BadRequest("Access blocked, need manager/user permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
 
             try
             {
@@ -94,9 +87,6 @@ namespace TicketMicroService.Controllers
                 throw;
             }
 
-
-
-
             newTicket.Passenger = passenger;
             newTicket.Flight = flight;
             newTicket.Classes = classe;
@@ -105,23 +95,34 @@ namespace TicketMicroService.Controllers
             newTicket.Amount = total;
 
             _ticketService.Create(newTicket);
+
+            var newTicketJson = JsonConvert.SerializeObject(newTicket);
+            PostLogApi.PostLogInApi(new Log(newTicket.LoginUser, null, newTicketJson, "Post"));
+
             return CreatedAtRoute("GetTicket", new { id = newTicket.Id.ToString() }, newTicket);
         }
 
         [HttpPut("{id:length(24)}")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Update(string id, Ticket upTicket)
         {
-            var ticket = _ticketService.Get(id);
+
+            var seachTicket = _ticketService.Get(id);
 
             if (upTicket == null)
                 return NotFound();
 
             _ticketService.Update(id, upTicket);
 
+            var updateTicket = JsonConvert.SerializeObject(upTicket);
+            var oldTicket = JsonConvert.SerializeObject(seachTicket);
+            PostLogApi.PostLogInApi(new Log(upTicket.LoginUser, oldTicket, updateTicket, "Update"));
+
             return NoContent();
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Delete(string id)
         {
             var ticket = _ticketService.Get(id);

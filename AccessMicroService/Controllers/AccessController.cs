@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using AccessMicroService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -18,10 +19,12 @@ namespace AccessMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Access>> Get() =>
             _accessService.Get();
 
         [HttpGet("{id}", Name ="GetAccess")]
+        [Authorize]
         public ActionResult<Access> Get(string id)
         {
             var access = _accessService.Get(id);
@@ -33,6 +36,7 @@ namespace AccessMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master")]
         public ActionResult<Access> Create(Access newAccess)
         {
             if (!string.IsNullOrEmpty(newAccess.Id))
@@ -52,6 +56,7 @@ namespace AccessMicroService.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Update(string id, Access upAccess)
         {
             var access = _accessService.Get(id);
@@ -65,6 +70,7 @@ namespace AccessMicroService.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string id)
         {
             var access = _accessService.Get(id);

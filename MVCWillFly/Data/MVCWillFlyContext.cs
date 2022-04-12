@@ -18,5 +18,7 @@ namespace MVCWillFly.Data
         public DbSet<MVCWillFly.Models.Airport> Airport { get; set; }
 
         public DbSet<Model.Airport> Airport_1 { get; set; }
+
+        public DbSet<Model.Aircraft> Aircraft { get; set; }
     }
 }

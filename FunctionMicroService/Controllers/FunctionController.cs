@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using FunctionMicroService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
@@ -21,10 +22,12 @@ namespace FunctionMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Function>> Get() =>
             _functionService.Get();
 
         [HttpGet("{id}", Name = "GetFuction")]
+        [Authorize]
         public ActionResult<Function> Get(string id)
         {
             var returnSeachFunction = _functionService.Get(id);
@@ -36,6 +39,7 @@ namespace FunctionMicroService.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Master")]
         public async Task<ActionResult<Function>> Create(Function newFunction)
         {
             Access access;
@@ -68,6 +72,7 @@ namespace FunctionMicroService.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Update(string id, Function upFunction)
         {
             var verifyExistFunction = _functionService.Get(id);
@@ -81,6 +86,7 @@ namespace FunctionMicroService.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Master")]
         public IActionResult Delete(string id)
         {
             var verifyExistFunction = _functionService.Get(id);

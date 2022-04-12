@@ -9,13 +9,22 @@ namespace Model
 {
     public class Log
     {
-        [bsonId]
+        [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string Id { get; set; }
-        public User User { get; set; }
+        public string UserId { get; set; }
         public string EntityBefore { get; set; }
         public string EntityAfter { get; set; } 
         public string Operation { get; set; }
         public DateTime DataOperation { get; set; }
+
+        public Log(string userId, string entityBefore, string entityAfter, string operation)
+        {
+            UserId = userId;
+            EntityBefore = entityBefore;
+            EntityAfter = entityAfter;
+            Operation = operation;
+            DataOperation = DateTime.Now;
+        }
     }
 }

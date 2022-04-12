@@ -157,5 +157,21 @@ namespace Services
                 throw;
             }
         }
+
+        public static async Task<User> SeachLoginAndPasswordInApiUser(string login, string password)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44325/api/User/LoginAndPassword?login="+ login + "&password=" + password);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var UserJson = JsonConvert.DeserializeObject<User>(responseBody);
+                return UserJson;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

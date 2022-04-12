@@ -7,6 +7,8 @@ using Services;
 using System;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PassengerMicroService.Controllers
 {
@@ -22,10 +24,12 @@ namespace PassengerMicroService.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<List<Passenger>> Get() =>
             _passengerService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetPassenger")]
+        [Authorize]
         public ActionResult<Passenger> Get(string id)
         {
             var passenger = _passengerService.Get(id);
@@ -37,6 +41,7 @@ namespace PassengerMicroService.Controllers
         }
 
         [HttpGet("{cpf}", Name = "GetPassengerCpf")]
+        [Authorize]
         public ActionResult<Passenger> GetCpf(string cpf)
         {
             var passenger = _passengerService.VerifyCpfPassenger(cpf);
@@ -48,22 +53,9 @@ namespace PassengerMicroService.Controllers
         }
 
         [HttpPost]
+        [Route("Master, User")]
         public async Task<ActionResult<Passenger>> Create(Passenger newPassenger)
         {
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newPassenger.LoginUser);
-
-                if (permissionUser.Funcition.Id != "1" || permissionUser.Funcition.Id != "2")
-                    return BadRequest("Access blocked, need manager/user permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
-
             var address = await ServiceSeachViaCep.ServiceSeachCepInApiViaCep(newPassenger.Address.Cep);
 
             try
@@ -101,27 +93,35 @@ namespace PassengerMicroService.Controllers
                 return StatusCode(443, "Service ViaCep Off");
             }
 
+            var newPassengerJson = JsonConvert.SerializeObject(newPassenger);
+            PostLogApi.PostLogInApi(new Log(newPassenger.LoginUser, null, newPassengerJson, "Post"));
+
 
             return CreatedAtRoute("GetPassenger", new { id = newPassenger.Id.ToString() }, newPassenger);
 
         }
 
         [HttpPut("{cpf}")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Update(string cpf, Passenger upAassenger)
         {
 
             var seachPassenger = _passengerService.VerifyCpfPassenger(cpf);
-
 
             if (seachPassenger == null)
                 return BadRequest("");
 
             _passengerService.Update(cpf, upAassenger);
 
+            var UpdatePassengerJson = JsonConvert.SerializeObject(upAassenger);
+            var OldPassengerJson = JsonConvert.SerializeObject(seachPassenger);
+            PostLogApi.PostLogInApi(new Log(upAassenger.LoginUser, OldPassengerJson, UpdatePassengerJson, "Update"));
+
             return NoContent();
         }
 
         [HttpDelete("{cpf}")]
+        [Authorize(Roles = "Master, User")]
         public IActionResult Delete(string cpf)
         {
             var seachPassenger = _passengerService.VerifyCpfPassenger(cpf);
