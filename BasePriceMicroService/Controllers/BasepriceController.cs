@@ -51,19 +51,6 @@ namespace BasePriceMicroService.Controllers
         public async Task<ActionResult<BasePrice>> Create(BasePrice newBaseprice)
         {
             Airport originAirport, destinyAirport;
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newBaseprice.LoginUser);
-
-                if (permissionUser.Function.Id != "1")
-                    return BadRequest("Access blocked, need manager permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
 
             try
             {
@@ -102,20 +89,6 @@ namespace BasePriceMicroService.Controllers
         [HttpPut("{id:length(24)}")]
         public async Task<IActionResult> Update(string id, BasePrice upBaseprice)
         {
-            User permissionUser;
-
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upBaseprice.LoginUser);
-
-                if (permissionUser.Function.Id != "1")
-                    return BadRequest("Access blocked, need manager permission");
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api");
-            }
-
             var seachBasePrice = _basepriceService.Get(id);
 
             if (seachBasePrice == null)

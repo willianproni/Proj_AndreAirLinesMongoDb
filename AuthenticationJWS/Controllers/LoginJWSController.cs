@@ -14,9 +14,9 @@ namespace AuthenticationJWS.Controllers
     {
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<dynamic>> AuthenticateAsync(User model)
+        public async Task<ActionResult<dynamic>> AuthenticateAsync(LoginSystem model)
         {
-            var user = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(model.Login);
+            var user = await ServiceSeachApiExisting.SeachLoginAndPasswordInApiUser(model.Login, model.Password);
 
             if (user == null)
                 return NotFound("User or password invalid, try again");

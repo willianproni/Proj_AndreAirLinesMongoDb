@@ -24,10 +24,12 @@ namespace AirportMicroServices.Controllers
         }
 
         [HttpGet] //Responsável por trazer todos os Aeroportos Cadastrado
+        [AllowAnonymous]
         public ActionResult<List<Airport>> Get() => //Função de buscar todos os Aeroportos
             _airportService.Get();                  // ###
 
         [HttpGet("{iata}", Name = "GetAirport")]
+        [Authorize]
         public ActionResult<Airport> GetSeachAirportIata(string iata) //Responsável por trazer uma dado especifico pelo CodeIata
         {
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o Aeroporto busca existe
@@ -44,18 +46,6 @@ namespace AirportMicroServices.Controllers
         {
             AddressDTO addressAirport;
             AirportData InfoAirportData;
-            User permissionUser;
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(newAirport.LoginUser); //Verifica a Api User e retorna a informação referente ao LoginUser
-
-                if (permissionUser.Function.Id != "1") //Verifica se a função tem acesso a Post Airport
-                    return BadRequest("Access blocked, need manager permission"); //Ser não ter acesso retorna a BadRequest
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api"); //Se a API User estiver desligada retorna o seguinte erro
-            }
 
             try
             {
@@ -94,21 +84,8 @@ namespace AirportMicroServices.Controllers
 
         [HttpPut("{iata}")] //Responsável por deletar um dado da Api referente ao CodeIata inserido
         [Authorize(Roles = "Master")]
-        public async Task<IActionResult> Update(string iata, Airport upAirport)
+        public IActionResult Update(string iata, Airport upAirport)
         {
-
-            User permissionUser;
-            try
-            {
-                permissionUser = await ServiceSeachApiExisting.SeachUserInApiByLoginUser(upAirport.LoginUser); //Verifica a Api User e retorna a informação referente ao LoginUser
-
-                if (permissionUser.Function.Id != "1") //Verifica se a função tem acesso a Update Airport
-                    return BadRequest("Access blocked, need manager permission"); //Ser não ter acesso retorna a BadRequest
-            }
-            catch (HttpRequestException)
-            {
-                return StatusCode(503, "Service User unavailable, start Api"); //Se a API User estiver desligada retorna o seguinte erro
-            }
 
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
 

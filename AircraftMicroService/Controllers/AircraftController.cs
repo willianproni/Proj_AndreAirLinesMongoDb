@@ -25,8 +25,7 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-
+        [AllowAnonymous]
         public ActionResult<List<Aircraft>> Get() =>
             _aircraftService.Get();
 
