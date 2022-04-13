@@ -39,9 +39,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogMicroService", "LogMicro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationJWS", "AuthenticationJWS\AuthenticationJWS.csproj", "{887F482E-BBE4-4C01-A1E4-374F9718AC6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjAircraftTestXUnit", "ProjUserTestXUnit\ProjAircraftTestXUnit.csproj", "{0C22BE10-62C6-410A-B73F-FDB1822D0EBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjAircraftTestXUnit", "ProjUserTestXUnit\ProjAircraftTestXUnit.csproj", "{0C22BE10-62C6-410A-B73F-FDB1822D0EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjUserTestUnit", "ProjUserTestUnit\ProjUserTestUnit.csproj", "{C2D4CE5E-6C68-472B-B11C-35232DE483EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjUserTestUnit", "ProjUserTestUnit\ProjUserTestUnit.csproj", "{C2D4CE5E-6C68-472B-B11C-35232DE483EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjTicketTestXUnit", "ProjTicketTestXUnit\ProjTicketTestXUnit.csproj", "{725CC297-C06F-43C4-B1ED-86CB5B9C1EEC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +131,10 @@ Global
 		{C2D4CE5E-6C68-472B-B11C-35232DE483EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2D4CE5E-6C68-472B-B11C-35232DE483EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2D4CE5E-6C68-472B-B11C-35232DE483EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{725CC297-C06F-43C4-B1ED-86CB5B9C1EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{725CC297-C06F-43C4-B1ED-86CB5B9C1EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{725CC297-C06F-43C4-B1ED-86CB5B9C1EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{725CC297-C06F-43C4-B1ED-86CB5B9C1EEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

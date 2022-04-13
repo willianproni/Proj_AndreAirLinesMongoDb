@@ -67,7 +67,7 @@ namespace ProjUserTestUnit
         {
             var userService = InitializeDataBase();
 
-            User newUser = new User()
+            User updateUser = new User()
             {
                 Id = "6255c6ef4d7da144fc170ade",
                 Name = "Alberto",
@@ -79,9 +79,9 @@ namespace ProjUserTestUnit
                 Sector = "Administrativo"
             };
 
-            userService.Update("88170507090", newUser);
-            var userReturn = userService.Get("20192336061");
-            Assert.Equal("20192336061", userReturn.Cpf);
+            userService.Update("88170507090", updateUser);
+            var userReturn = userService.Get("88170507090");
+            Assert.Equal("88170507090", userReturn.Cpf);
         }
 
         [Fact]
