@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
+using ProjRabbitMQLogs.Service;
 
 namespace AircraftMicroService.Controllers
 {
@@ -25,12 +26,12 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public ActionResult<List<Aircraft>> Get() =>
             _aircraftService.Get();
 
         [HttpGet("{nameAircraft}", Name = "GetAircraft")]
-        [Authorize]
+        //[Authorize]
         public ActionResult<Aircraft> GetArcraftName(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
@@ -42,10 +43,9 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Master")]
+        //[Authorize(Roles = "Master")]
         public async Task<ActionResult<Aircraft>> Create(Aircraft newAircraft)
         {
-
             try
             {
                 if (_aircraftService.VerifyAircraftExist(newAircraft.Name))
@@ -54,7 +54,7 @@ namespace AircraftMicroService.Controllers
                 _aircraftService.Create(newAircraft);
 
                 var aircraftJson = JsonConvert.SerializeObject(newAircraft);
-                PostLogApi.PostLogInApi(new Log(newAircraft.LoginUser, null, aircraftJson, "Post"));
+                await SenderMongoDBservice.Add(new Log(newAircraft.LoginUser, null, aircraftJson, "Post"));
 
                 return CreatedAtRoute("GetAircraft", new { Name = newAircraft.Name.ToString() }, newAircraft);
             }
@@ -66,8 +66,8 @@ namespace AircraftMicroService.Controllers
         }
 
         [HttpPut("{nameAircraft}")]
-        [Authorize(Roles = "Master")]
-        public IActionResult Update(string nameAircraft, Aircraft upAircraft)
+        //[Authorize(Roles = "Master")]
+        public async IActionResult Update(string nameAircraft, Aircraft upAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
 
@@ -76,11 +76,15 @@ namespace AircraftMicroService.Controllers
 
             _aircraftService.Update(nameAircraft, upAircraft);
 
+            var updateAircraftJson = JsonConvert.SerializeObject(upAircraft);
+            var oldAicraft = JsonConvert.SerializeObject(SeachArcraft);
+            await SenderMongoDBservice.Add(new Log(upAircraft.LoginUser, oldAicraft, updateAircraftJson, "Update"));
+
             return NoContent();
         }
 
         [HttpDelete("{nameAircraft}")]
-        [Authorize(Roles = "Master")]
+        //[Authorize(Roles = "Master")]
         public IActionResult Delete(string nameAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);

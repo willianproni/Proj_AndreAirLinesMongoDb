@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using Newtonsoft.Json;
+using ProjRabbitMQLogs.Service;
 using Services;
 using UserMicroServices.Services;
 
@@ -85,7 +86,7 @@ namespace UserMicroServices.Controllers
                     _userService.Create(newUser);
 
                     var newUserJson = JsonConvert.SerializeObject(newUser);
-                    PostLogApi.PostLogInApi(new Log(newUser.LoginUser, null , newUserJson, "Post"));
+                    await SenderMongoDBservice.Add(new Log(newUser.LoginUser, null , newUserJson, "Post"));
 
                     return CreatedAtRoute("GetLogin", new { LoginUser = newUser.LoginUser }, newUser);
                 }
@@ -100,9 +101,7 @@ namespace UserMicroServices.Controllers
 
         [HttpPut("{cpf}")]
         [Authorize(Roles = "Master")]
-
-
-        public IActionResult Update(string cpf, User upUser)
+        public async Task<IActionResult> Update(string cpf, User upUser)
         {
             var SeachUser = _userService.Get(cpf);
 
@@ -113,7 +112,7 @@ namespace UserMicroServices.Controllers
 
             var updateUserJson = JsonConvert.SerializeObject(upUser);
             var oldUser = JsonConvert.SerializeObject(SeachUser);
-            PostLogApi.PostLogInApi(new Log(upUser.LoginUser, oldUser, updateUserJson, "Update"));
+            await SenderMongoDBservice.Add(new Log(upUser.LoginUser, oldUser, updateUserJson, "Update"));
 
             return NoContent();
         }

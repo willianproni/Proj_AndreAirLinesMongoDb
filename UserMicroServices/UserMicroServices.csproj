@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AuthenticationJWS\AuthenticationJWS.csproj" />
     <ProjectReference Include="..\Model\Model.csproj" />
+    <ProjectReference Include="..\ProjRabbitMQLogs\ProjRabbitMQLogs.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
 
