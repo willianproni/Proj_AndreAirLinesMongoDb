@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using Newtonsoft.Json;
+using ProjRabbitMQLogs.Service;
 using Services;
 using TicketMicroService.Services;
 
@@ -97,14 +98,14 @@ namespace TicketMicroService.Controllers
             _ticketService.Create(newTicket);
 
             var newTicketJson = JsonConvert.SerializeObject(newTicket);
-            PostLogApi.PostLogInApi(new Log(newTicket.LoginUser, null, newTicketJson, "Post"));
+            await SenderMongoDBservice.Add(new Log(newTicket.LoginUser, null, newTicketJson, "Post"));
 
             return CreatedAtRoute("GetTicket", new { id = newTicket.Id.ToString() }, newTicket);
         }
 
         [HttpPut("{id:length(24)}")]
         [Authorize(Roles = "Master, User")]
-        public IActionResult Update(string id, Ticket upTicket)
+        public async Task<IActionResult> Update(string id, Ticket upTicket)
         {
 
             var seachTicket = _ticketService.Get(id);
@@ -116,7 +117,7 @@ namespace TicketMicroService.Controllers
 
             var updateTicket = JsonConvert.SerializeObject(upTicket);
             var oldTicket = JsonConvert.SerializeObject(seachTicket);
-            PostLogApi.PostLogInApi(new Log(upTicket.LoginUser, oldTicket, updateTicket, "Update"));
+            await SenderMongoDBservice.Add(new Log(upTicket.LoginUser, oldTicket, updateTicket, "Update"));
 
             return NoContent();
         }

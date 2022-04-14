@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
 using Newtonsoft.Json;
+using ProjRabbitMQLogs.Service;
 using Services;
 
 namespace BasePriceMicroService.Controllers
@@ -85,14 +86,14 @@ namespace BasePriceMicroService.Controllers
             _basepriceService.Create(newBaseprice);
 
             var newBasePriceJson = JsonConvert.SerializeObject(newBaseprice);
-            PostLogApi.PostLogInApi(new Log(newBaseprice.LoginUser, null, newBasePriceJson, "Post"));
+            await SenderMongoDBservice.Add(new Log(newBaseprice.LoginUser, null, newBasePriceJson, "Post"));
 
             return CreatedAtRoute("GetBasePrice", new { id = newBaseprice.Id.ToString() }, newBaseprice);
         }
 
         [HttpPut("{id:length(24)}")]
         [Authorize(Roles = "Master")]
-        public IActionResult Update(string id, BasePrice upBaseprice)
+        public async Task<IActionResult> Update(string id, BasePrice upBaseprice)
         {
             var seachBasePrice = _basepriceService.Get(id);
 
@@ -103,7 +104,7 @@ namespace BasePriceMicroService.Controllers
 
             var updateBasePriceJson = JsonConvert.SerializeObject(upBaseprice);
             var oldBasePriceJson = JsonConvert.SerializeObject(seachBasePrice);
-            PostLogApi.PostLogInApi(new Log(upBaseprice.LoginUser, oldBasePriceJson, updateBasePriceJson, "Update"));
+            await SenderMongoDBservice.Add(new Log(upBaseprice.LoginUser, oldBasePriceJson, updateBasePriceJson, "Update"));
 
             return NoContent();
         }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
+using ProjRabbitMQLogs.Service;
 
 namespace FlightMicroService.Controllers
 {
@@ -71,7 +72,7 @@ namespace FlightMicroService.Controllers
                 newFlight.Aircraft = aircraftApi;
 
                 var newFlightJson = JsonConvert.SerializeObject(newFlight);
-                PostLogApi.PostLogInApi(new Log(newFlight.LoginUser, null, newFlightJson, "Post"));
+                await SenderMongoDBservice.Add(new Log(newFlight.LoginUser, null, newFlightJson, "Post"));
 
                 _flightService.Create(newFlight);
 
@@ -110,7 +111,7 @@ namespace FlightMicroService.Controllers
 
             var updateFlight = JsonConvert.SerializeObject(upFlight);
             var oldFlight = JsonConvert.SerializeObject(seachFlight);
-            PostLogApi.PostLogInApi(new Log(upFlight.LoginUser, oldFlight, updateFlight, "Update"));
+            await SenderMongoDBservice.Add(new Log(upFlight.LoginUser, oldFlight, updateFlight, "Update"));
 
             return NoContent();
         }

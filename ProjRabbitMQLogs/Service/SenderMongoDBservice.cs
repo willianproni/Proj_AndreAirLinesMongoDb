@@ -11,16 +11,15 @@ namespace ProjRabbitMQLogs.Service
 {
     public class SenderMongoDBservice
     {
-        private readonly HttpClient client = new HttpClient();
+        static readonly HttpClient client = new HttpClient();
 
         public static async Task Add(Log log)
         {
             try
             {
-                HttpClient client = new HttpClient();
 
                 if (client.BaseAddress == null)
-                    await client.PostAsJsonAsync("https://localhost:44366/api/Log", log);
+                    await client.PostAsJsonAsync("https://localhost:44396/api/ProducerLog", log);
 
             }
             catch (HttpRequestException e)
