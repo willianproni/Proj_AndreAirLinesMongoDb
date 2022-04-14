@@ -95,7 +95,7 @@ namespace PassengerMicroService.Controllers
             }
 
             var newPassengerJson = JsonConvert.SerializeObject(newPassenger);
-            await SenderMongoDBservice.Add(new Log(newPassenger.LoginUser, null, newPassengerJson, "Post"));
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(newPassenger.LoginUser, null, newPassengerJson, "Post"));
 
 
             return CreatedAtRoute("GetPassenger", new { id = newPassenger.Id.ToString() }, newPassenger);
@@ -104,7 +104,7 @@ namespace PassengerMicroService.Controllers
 
         [HttpPut("{cpf}")]
         [Authorize(Roles = "Master, User")]
-        public async Task<IActionResult> Update(string cpf, Passenger upAassenger)
+        public IActionResult Update(string cpf, Passenger upAassenger)
         {
 
             var seachPassenger = _passengerService.VerifyCpfPassenger(cpf);
@@ -116,7 +116,7 @@ namespace PassengerMicroService.Controllers
 
             var UpdatePassengerJson = JsonConvert.SerializeObject(upAassenger);
             var OldPassengerJson = JsonConvert.SerializeObject(seachPassenger);
-            await SenderMongoDBservice.Add(new Log(upAassenger.LoginUser, OldPassengerJson, UpdatePassengerJson, "Update"));
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(upAassenger.LoginUser, OldPassengerJson, UpdatePassengerJson, "Update"));
 
             return NoContent();
         }

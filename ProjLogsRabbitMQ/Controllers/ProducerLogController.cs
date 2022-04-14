@@ -18,7 +18,7 @@ namespace ProjLogsRabbitMQ.Controllers
         {
             _factory = new ConnectionFactory
             {
-                HostName = "localhost"
+                HostName = "localhost",
             };
         }
 

@@ -71,7 +71,7 @@ namespace AirportMicroServices.Controllers
                 _airportService.Create(newAirport); //Cria um novo Aeroporto no database
 
                 var newAirportJson = JsonConvert.SerializeObject(newAirport); //Converte o novo aeroporto em arquivo Json
-                await SenderMongoDBservice.Add(new Log(newAirport.LoginUser, null, newAirportJson, "Post")); //Chama o serviço de cadastrar Log
+                ServiceSeachApiExisting.LogInApiRabbit(new Log(newAirport.LoginUser, null, newAirportJson, "Post")); //Chama o serviço de cadastrar Log
 
                 return CreatedAtRoute("GetAirport", new { id = newAirport.Id.ToString() }, newAirport); //Retorna a os dados do novo aeroporto inserido no do Post da api.
 
@@ -85,7 +85,7 @@ namespace AirportMicroServices.Controllers
 
         [HttpPut("{iata}")] //Responsável por deletar um dado da Api referente ao CodeIata inserido
        // [Authorize(Roles = "Master")]
-        public async Task<IActionResult> Update(string iata, Airport upAirport)
+        public IActionResult Update(string iata, Airport upAirport)
         {
 
             var SeachAirport = _airportService.GetAirport(iata); //Verifica se o aeroporto existe no banco de dados
@@ -97,7 +97,7 @@ namespace AirportMicroServices.Controllers
 
             var updateAirportJson = JsonConvert.SerializeObject(upAirport);
             var oldAirportJson = JsonConvert.SerializeObject(SeachAirport);
-            await SenderMongoDBservice.Add(new Log(upAirport.LoginUser, oldAirportJson, updateAirportJson, "Update")); //Chama o serviço de cadastrar Log
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(upAirport.LoginUser, oldAirportJson, updateAirportJson, "Update")); //Chama o serviço de cadastrar Log
 
             return NoContent();
         }

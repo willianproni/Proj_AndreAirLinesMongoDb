@@ -44,7 +44,7 @@ namespace AircraftMicroService.Controllers
 
         [HttpPost]
         //[Authorize(Roles = "Master")]
-        public async Task<ActionResult<Aircraft>> Create(Aircraft newAircraft)
+        public  ActionResult<Aircraft> Create(Aircraft newAircraft)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace AircraftMicroService.Controllers
                 _aircraftService.Create(newAircraft);
 
                 var aircraftJson = JsonConvert.SerializeObject(newAircraft);
-                await SenderMongoDBservice.Add(new Log(newAircraft.LoginUser, null, aircraftJson, "Post"));
+                ServiceSeachApiExisting.LogInApiRabbit(new Log(newAircraft.LoginUser, null, aircraftJson, "Post"));
 
                 return CreatedAtRoute("GetAircraft", new { Name = newAircraft.Name.ToString() }, newAircraft);
             }
@@ -67,7 +67,7 @@ namespace AircraftMicroService.Controllers
 
         [HttpPut("{nameAircraft}")]
         //[Authorize(Roles = "Master")]
-        public async IActionResult Update(string nameAircraft, Aircraft upAircraft)
+        public IActionResult Update(string nameAircraft, Aircraft upAircraft)
         {
             var SeachArcraft = _aircraftService.GetNameAircraft(nameAircraft);
 
@@ -78,7 +78,7 @@ namespace AircraftMicroService.Controllers
 
             var updateAircraftJson = JsonConvert.SerializeObject(upAircraft);
             var oldAicraft = JsonConvert.SerializeObject(SeachArcraft);
-            await SenderMongoDBservice.Add(new Log(upAircraft.LoginUser, oldAicraft, updateAircraftJson, "Update"));
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(upAircraft.LoginUser, oldAicraft, updateAircraftJson, "Update"));
 
             return NoContent();
         }
