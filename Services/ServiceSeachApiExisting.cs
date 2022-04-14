@@ -51,7 +51,39 @@ namespace Services
         {
             try
             {
-                HttpResponseMessage response = await client.GetAsync("https://localhost:44376/api/Dapper/JNB?iata=" + iata);
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44376/api/Dapper/iata/" + iata);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var airportData = JsonConvert.DeserializeObject<AirportData>(responseBody);
+                return airportData;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static async Task<AirportData> SeachAirportDataSqlIdApiForId(int id)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44376/api/Dapper/" + id);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var airportData = JsonConvert.DeserializeObject<AirportData>(responseBody);
+                return airportData;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static async Task<AirportData> SeachAirportDataSqlEntityFrameworkIdApiForId(int id)
+        {
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync("https://localhost:44364/api/AirportDatas/" + id);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
                 var airportData = JsonConvert.DeserializeObject<AirportData>(responseBody);

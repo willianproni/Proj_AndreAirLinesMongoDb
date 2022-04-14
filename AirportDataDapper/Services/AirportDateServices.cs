@@ -20,6 +20,9 @@ namespace AirportDataDapper.Services
         public List<AirportData> GetAll() =>
             _airpotyDateReposity.GeAll();
 
+        public AirportData GetId(int id) =>
+            _airpotyDateReposity.GetId(id);
+
         public AirportData Get(string code) =>
             _airpotyDateReposity.Get(code);
 

@@ -45,9 +45,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjUserTestUnit", "ProjUse
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjTicketTestXUnit", "ProjTicketTestXUnit\ProjTicketTestXUnit.csproj", "{725CC297-C06F-43C4-B1ED-86CB5B9C1EEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjRabbitMQLogs", "ProjRabbitMQLogs\ProjRabbitMQLogs.csproj", "{E6453E60-EEEF-482D-B834-82955EA841A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjRabbitMQLogs", "ProjRabbitMQLogs\ProjRabbitMQLogs.csproj", "{E6453E60-EEEF-482D-B834-82955EA841A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjLogsRabbitMQ", "ProjLogsRabbitMQ\ProjLogsRabbitMQ.csproj", "{CEDC65AC-BD17-477C-9D6F-3E2E0C504D4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjLogsRabbitMQ", "ProjLogsRabbitMQ\ProjLogsRabbitMQ.csproj", "{CEDC65AC-BD17-477C-9D6F-3E2E0C504D4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestEfficiencyDapperVsEF", "TestEfficiencyDapperVsEF\TestEfficiencyDapperVsEF.csproj", "{095142D4-FC1E-405F-8022-E185CAABD033}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -147,6 +149,10 @@ Global
 		{CEDC65AC-BD17-477C-9D6F-3E2E0C504D4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEDC65AC-BD17-477C-9D6F-3E2E0C504D4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEDC65AC-BD17-477C-9D6F-3E2E0C504D4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{095142D4-FC1E-405F-8022-E185CAABD033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095142D4-FC1E-405F-8022-E185CAABD033}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095142D4-FC1E-405F-8022-E185CAABD033}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095142D4-FC1E-405F-8022-E185CAABD033}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

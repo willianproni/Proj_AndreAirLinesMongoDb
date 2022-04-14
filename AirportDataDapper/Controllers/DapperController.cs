@@ -22,7 +22,18 @@ namespace AirportDataDapper.Controllers
         public ActionResult<List<AirportData>> Get() =>
             _airportDateServices.GetAll();
 
-        [HttpGet("{code}")]
+        [HttpGet("{id}")]
+        public ActionResult<AirportData> GetId(int id)
+        {
+            var SeachAirportDapper = _airportDateServices.GetId(id);
+
+            if (SeachAirportDapper == null)
+                return NotFound("Airport Not Exist");
+
+            return SeachAirportDapper;
+        }
+
+        [HttpGet("iata/{iata}")]
         public ActionResult<AirportData> Get(string iata)
         {
             var SeachAirportDapper = _airportDateServices.Get(iata);
@@ -40,7 +51,7 @@ namespace AirportDataDapper.Controllers
             return newAirport;
         }
 
-        [HttpPut("{code}")]
+        [HttpPut("{iata}")]
         public IActionResult Update(string iata, AirportData updateAirport)
         {
             var SeachAirportDapper = _airportDateServices.Get(iata);

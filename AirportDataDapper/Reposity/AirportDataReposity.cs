@@ -39,12 +39,24 @@ namespace AirportDataDapper.Reposity
             }
         }
 
+
+        public AirportData GetId(int id)
+        {
+            using (var dataBase = new SqlConnection(_conection))
+            {
+                dataBase.Open();
+                var airportSeach = dataBase.QueryFirstOrDefault<AirportData>(AirportData.GETID, new { Id = id }); //O Var airportSheach vai receber a consulta pelo ID no AirportData.
+                                                                                                                      //E retornar a informação se for encontrado .
+                return (AirportData)airportSeach; //Retorno do Aeroporto encontrado.
+            }
+        }
+
         public AirportData Get(string iata) //Buscar um Determinado Dado de Aeroporto pelo ID
         {
             using (var dataBase = new SqlConnection(_conection))
             {
                 dataBase.Open();
-                var airportSeach = dataBase.QueryFirstOrDefault<AirportData>(AirportData.GETID, new { code = iata }); //O Var airportSheach vai receber a consulta pelo ID no AirportData.
+                var airportSeach = dataBase.QueryFirstOrDefault<AirportData>(AirportData.GETIATA, new { code = iata }); //O Var airportSheach vai receber a consulta pelo ID no AirportData.
                                                                                                                       //E retornar a informação se for encontrado .
                 return (AirportData)airportSeach; //Retorno do Aeroporto encontrado.
             }
