@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,8 +19,10 @@ namespace ProjRabbitMQLogs.Service
             try
             {
 
-                if (client.BaseAddress == null)
-                    await client.PostAsJsonAsync("https://localhost:44396/api/ProducerLog", log);
+                if (client.BaseAddress == null) client.BaseAddress = new Uri("https://localhost:44366/");
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                await client.PostAsJsonAsync("api/Log", log);
 
             }
             catch (HttpRequestException e)

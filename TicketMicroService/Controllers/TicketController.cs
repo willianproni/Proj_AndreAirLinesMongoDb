@@ -98,14 +98,14 @@ namespace TicketMicroService.Controllers
             _ticketService.Create(newTicket);
 
             var newTicketJson = JsonConvert.SerializeObject(newTicket);
-            await SenderMongoDBservice.Add(new Log(newTicket.LoginUser, null, newTicketJson, "Post"));
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(newTicket.LoginUser, null, newTicketJson, "Post"));
 
             return CreatedAtRoute("GetTicket", new { id = newTicket.Id.ToString() }, newTicket);
         }
 
         [HttpPut("{id:length(24)}")]
         [Authorize(Roles = "Master, User")]
-        public async Task<IActionResult> Update(string id, Ticket upTicket)
+        public IActionResult Update(string id, Ticket upTicket)
         {
 
             var seachTicket = _ticketService.Get(id);
@@ -117,7 +117,7 @@ namespace TicketMicroService.Controllers
 
             var updateTicket = JsonConvert.SerializeObject(upTicket);
             var oldTicket = JsonConvert.SerializeObject(seachTicket);
-            await SenderMongoDBservice.Add(new Log(upTicket.LoginUser, oldTicket, updateTicket, "Update"));
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(upTicket.LoginUser, oldTicket, updateTicket, "Update"));
 
             return NoContent();
         }

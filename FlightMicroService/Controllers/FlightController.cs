@@ -72,7 +72,7 @@ namespace FlightMicroService.Controllers
                 newFlight.Aircraft = aircraftApi;
 
                 var newFlightJson = JsonConvert.SerializeObject(newFlight);
-                await SenderMongoDBservice.Add(new Log(newFlight.LoginUser, null, newFlightJson, "Post"));
+                ServiceSeachApiExisting.LogInApiRabbit(new Log(newFlight.LoginUser, null, newFlightJson, "Post"));
 
                 _flightService.Create(newFlight);
 
@@ -111,7 +111,7 @@ namespace FlightMicroService.Controllers
 
             var updateFlight = JsonConvert.SerializeObject(upFlight);
             var oldFlight = JsonConvert.SerializeObject(seachFlight);
-            await SenderMongoDBservice.Add(new Log(upFlight.LoginUser, oldFlight, updateFlight, "Update"));
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(upFlight.LoginUser, oldFlight, updateFlight, "Update"));
 
             return NoContent();
         }

@@ -86,7 +86,7 @@ namespace UserMicroServices.Controllers
                     _userService.Create(newUser);
 
                     var newUserJson = JsonConvert.SerializeObject(newUser);
-                    await SenderMongoDBservice.Add(new Log(newUser.LoginUser, null , newUserJson, "Post"));
+                    ServiceSeachApiExisting.LogInApiRabbit(new Log(newUser.LoginUser, null , newUserJson, "Post"));
 
                     return CreatedAtRoute("GetLogin", new { LoginUser = newUser.LoginUser }, newUser);
                 }
@@ -101,7 +101,7 @@ namespace UserMicroServices.Controllers
 
         [HttpPut("{cpf}")]
         [Authorize(Roles = "Master")]
-        public async Task<IActionResult> Update(string cpf, User upUser)
+        public IActionResult Update(string cpf, User upUser)
         {
             var SeachUser = _userService.Get(cpf);
 
@@ -112,7 +112,7 @@ namespace UserMicroServices.Controllers
 
             var updateUserJson = JsonConvert.SerializeObject(upUser);
             var oldUser = JsonConvert.SerializeObject(SeachUser);
-            await SenderMongoDBservice.Add(new Log(upUser.LoginUser, oldUser, updateUserJson, "Update"));
+            ServiceSeachApiExisting.LogInApiRabbit(new Log(upUser.LoginUser, oldUser, updateUserJson, "Update"));
 
             return NoContent();
         }

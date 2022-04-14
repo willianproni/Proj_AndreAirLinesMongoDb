@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Model;
@@ -172,6 +173,11 @@ namespace Services
             {
                 throw;
             }
+        }
+
+        public static void LogInApiRabbit(Log newLog)
+        {
+            client.PostAsJsonAsync("https://localhost:44396/api/ProducerLog", newLog);
         }
     }
 }
